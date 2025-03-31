@@ -1,10 +1,18 @@
-import { Outlet } from 'react-router-dom';
+import { ConfigProvider } from "antd";
+import { Outlet } from "react-router-dom";
 
 function App() {
-
   return (
-    <Outlet></Outlet>
-  )
+    <ConfigProvider 
+    theme={{
+      token: {
+        colorPrimary: '#f45334',
+      },
+    }}
+    >
+      <Outlet></Outlet>
+    </ConfigProvider>
+  );
 }
 
-export default App
+export default App;
