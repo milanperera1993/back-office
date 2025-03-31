@@ -1,20 +1,20 @@
+import React from "react";
 import styled from "styled-components";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { Layout, Row, Col } from "antd";
+import { Layout, Row, Col, Grid } from "antd";
 
 const { Header } = Layout;
+const { useBreakpoint } = Grid;
 
-const StyledHeader = styled(Header)`
+const StyledHeader = styled(Header)<{ padding: string }>`
   background: #fff;
   border-bottom: 1px solid #ccc;
-  padding: 0 48px;
+  padding: ${(props) => props.padding};
   height: 80px;
   display: flex;
   align-items: center;
-
-  @media (max-width: 576px) {
-    padding: 0 16px;
-  }
+  position: relative;
+  z-index: 10;
 `;
 
 const BurgerIconContainer = styled.div`
@@ -35,7 +35,6 @@ const BurgerIconContainer = styled.div`
 const Logo = styled.div`
   display: flex;
   align-items: center;
-
   img {
     height: 42px;
   }
@@ -45,6 +44,7 @@ const NavRight = styled.div`
   display: flex;
   align-items: center;
   gap: 24px;
+  padding-right: 16px;
 `;
 
 const NavIcon = styled.div`
@@ -62,26 +62,19 @@ const NavIcon = styled.div`
 const NavLabel = styled.span`
   margin-top: 4px;
   line-height: 1;
-
-  @media (max-width: 576px) {
-    display: none;
-  }
 `;
 
 interface NavBarProps {
   icons?: boolean;
 }
 
-const Navbar = ({ icons = true }: NavBarProps) => {
-  console.log(icons);
+const Navbar: React.FC<NavBarProps> = ({ icons = true }) => {
+  const screens = useBreakpoint();
+  const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
+
   return (
-    <StyledHeader>
-      <Row
-        style={{ width: "100%" }}
-        align="middle"
-        justify="space-between"
-        wrap={false}
-      >
+    <StyledHeader padding={headerPadding}>
+      <Row style={{ width: "100%" }} align="middle" justify="space-between" wrap={false}>
         <Col>
           <Row align="middle" wrap={false}>
             {icons && (
@@ -111,4 +104,5 @@ const Navbar = ({ icons = true }: NavBarProps) => {
     </StyledHeader>
   );
 };
+
 export default Navbar;

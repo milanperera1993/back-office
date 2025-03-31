@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
-import Login from "../pages/Login";
-import Dashboard from "../layouts/Dashboard";
+import DashboardLayout from "../layouts/DashboardLayout";
+import LoginLayout from "../layouts/LoginLayout";
 
 const isAuthenticated = () => {
   return false;
@@ -21,11 +21,11 @@ const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login />,
+        element: <LoginLayout />,
       },
       {
         path: "dashboard",
-        element: <Dashboard />,
+        element: <DashboardLayout />,
       },
     ],
   },

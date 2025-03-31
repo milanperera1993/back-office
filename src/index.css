@@ -3,5 +3,8 @@ html, body, #root {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #f45334;
+}
+
+.ant-drawer-content-wrapper {
+  box-shadow: none !important;
 }
