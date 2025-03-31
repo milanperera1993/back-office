@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Button, Form, Input, Typography } from "antd";
 import useVh from "../hooks/useVh";
+import { useNavigate } from "react-router-dom";
+import { NAVBAR_HEIGHT } from "../constants/dimensions";
 
 const { Title } = Typography;
 
@@ -11,7 +13,7 @@ interface LoginFormValues {
 }
 
 const Container = styled.div`
-  height: calc(var(--vh, 1vh) * 100);
+  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT});
   background-color: #efefef;
   display: flex;
   justify-content: center;
@@ -61,15 +63,17 @@ const StyledButton = styled(Button)<{ $valid: boolean }>`
 const LoginScreen: React.FC = () => {
   // Custom hook to set the viewport height and removing resizing issues in mobile view.
   useVh();
+  const naviagte = useNavigate()
 
   const [form] = Form.useForm();
   const [isFormValid, setIsFormValid] = useState(false);
 
   /**
-   * handle form submission. onFinished failed is not used cause it's being handled using the button disable logic.
+   * handle form submission. onFinishedFailed is not used cause it's being handled using the button disable logic.
    * @param values
    */
   const onFinish = (values: LoginFormValues) => {
+    naviagte("/dashboard");
     console.log("Form values:", values);
   };
 
