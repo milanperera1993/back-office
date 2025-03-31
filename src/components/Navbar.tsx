@@ -11,6 +11,10 @@ const StyledHeader = styled(Header)`
   height: 80px;
   display: flex;
   align-items: center;
+
+  @media (max-width: 576px) {
+    padding: 0 16px;
+  }
 `;
 
 const BurgerIconContainer = styled.div`
