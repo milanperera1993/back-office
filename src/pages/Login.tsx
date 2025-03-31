@@ -38,12 +38,14 @@ const StyledInput = styled(Input)`
   border: 1px solid #ccc;
   height: 40px;
   box-shadow: none;
+  font-size: 16px;
 `;
 
 const StyledPasswordInput = styled(Input.Password)`
   border: 1px solid #ccc;
   height: 40px;
   box-shadow: none;
+    font-size: 16px;
 `;
 
 const StyledButton = styled(Button)<{ $valid: boolean }>`
