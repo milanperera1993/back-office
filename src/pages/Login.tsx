@@ -10,7 +10,7 @@ interface LoginFormValues {
 }
 
 const Container = styled.div`
-  min-height: 100vh;
+  height: 100vh;
   background-color: #efefef;
   display: flex;
   justify-content: center;
@@ -45,7 +45,7 @@ const StyledPasswordInput = styled(Input.Password)`
 `;
 
 const StyledButton = styled(Button)<{ $valid: boolean }>`
-  background-color: ${({ $valid }) => ($valid ? "#d9534f" : "#e2e2e2")} !important;
+  background-color: ${({ $valid }) => ($valid ? "#f45334" : "#e2e2e2")} !important;
   color: ${({ $valid }) => ($valid ? "#fff" : "#000")} !important;
   border: none !important;
   font-weight: 500;
