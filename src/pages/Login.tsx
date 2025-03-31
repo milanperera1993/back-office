@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Button, Form, Input, Typography } from "antd";
+import useVh from "../hooks/useVh";
 
 const { Title } = Typography;
 
@@ -10,7 +11,7 @@ interface LoginFormValues {
 }
 
 const Container = styled.div`
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background-color: #efefef;
   display: flex;
   justify-content: center;
@@ -56,6 +57,9 @@ const StyledButton = styled(Button)<{ $valid: boolean }>`
 `;
 
 const LoginScreen: React.FC = () => {
+  // Custom hook to set the viewport height and removing resizing issues in mobile view.
+  useVh();
+
   const [form] = Form.useForm();
   const [isFormValid, setIsFormValid] = useState(false);
 
