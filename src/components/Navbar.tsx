@@ -1,3 +1,4 @@
+// Navbar.tsx
 import React from "react";
 import styled from "styled-components";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
@@ -66,9 +67,11 @@ const NavLabel = styled.span`
 
 interface NavBarProps {
   icons?: boolean;
+  onBurgerClick?: () => void;
+  drawerVisible?: boolean;
 }
 
-const Navbar: React.FC<NavBarProps> = ({ icons = true }) => {
+const Navbar: React.FC<NavBarProps> = ({ icons = true, onBurgerClick, drawerVisible = false }) => {
   const screens = useBreakpoint();
   const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
 
@@ -77,17 +80,17 @@ const Navbar: React.FC<NavBarProps> = ({ icons = true }) => {
       <Row style={{ width: "100%" }} align="middle" justify="space-between" wrap={false}>
         <Col>
           <Row align="middle" wrap={false}>
-            {icons && (
-              <BurgerIconContainer>
+            {drawerVisible && (
+              <BurgerIconContainer onClick={onBurgerClick}>
                 <MenuOutlined />
               </BurgerIconContainer>
             )}
-            <Logo>
+            { drawerVisible && <Logo>
               <img
                 src="https://www.home24.de/corgi/pageapps/prepurchase/_next/static/media/home-24-logo.192e9885.svg"
                 alt="Home24 Logo"
               />
-            </Logo>
+            </Logo>}
           </Row>
         </Col>
         <Col>
