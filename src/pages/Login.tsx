@@ -16,6 +16,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0 16px;
+  overflow: hidden;
 `;
 
 const Card = styled.div`
