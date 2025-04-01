@@ -1,8 +1,11 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { MenuOutlined, UserOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { Layout, Row, Col, Grid, Dropdown } from "antd";
 import { AuthContext } from "../provider/util";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import LastUpdatedProduct from "./LastUpdatedProduct";
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -68,7 +71,7 @@ const NavLabel = styled.span`
 interface NavBarProps {
   icons?: boolean;
   onBurgerClick?: () => void;
-  disableBurgerHandler?: boolean
+  disableBurgerHandler?: boolean;
 }
 
 const Navbar: React.FC<NavBarProps> = ({
@@ -78,20 +81,17 @@ const Navbar: React.FC<NavBarProps> = ({
 }) => {
   const screens = useBreakpoint();
   const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
-  const {logoutUser} = useContext(AuthContext);
+  const { logoutUser } = useContext(AuthContext);
 
   const logoutHandler = () => {
     logoutUser();
-  }
+  };
+
+  const updatedProduct = useSelector((state: RootState) => state.product.updatedProduct);
 
   return (
     <StyledHeader padding={headerPadding}>
-      <Row
-        style={{ width: "100%" }}
-        align="middle"
-        justify="space-between"
-        wrap={false}
-      >
+      <Row style={{ width: "100%" }} align="middle" justify="space-between" wrap={false}>
         <Col>
           <Row align="middle" wrap={false}>
             {icons && (
@@ -128,6 +128,23 @@ const Navbar: React.FC<NavBarProps> = ({
                   <NavLabel>Profile</NavLabel>
                 </NavIcon>
               </Dropdown>
+              {updatedProduct ? (
+                <Dropdown
+                  dropdownRender={() => <LastUpdatedProduct product={updatedProduct} />}
+                  trigger={["click"]}
+                  placement="bottomRight"
+                >
+                  <NavIcon>
+                    <ClockCircleOutlined />
+                    <NavLabel>Updated</NavLabel>
+                  </NavIcon>
+                </Dropdown>
+              ) : (
+                <NavIcon>
+                  <ClockCircleOutlined />
+                  <NavLabel>No update</NavLabel>
+                </NavIcon>
+              )}
             </NavRight>
           )}
         </Col>

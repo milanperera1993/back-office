@@ -22,6 +22,8 @@ import {
   useFetchProductByIdQuery,
   useUpdateProductMutation,
 } from "../redux/products/productsApi";
+import { useDispatch } from "react-redux";
+import { setUpdatedProduct } from "../redux/products/productSlice";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -117,6 +119,7 @@ const ProductDetails = () => {
   useVh();
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const initialProduct = location.state?.product as Product;
   const category = location.state?.category as Category;
@@ -181,6 +184,7 @@ const ProductDetails = () => {
     try {
       const updated = await updateProduct(updatedProduct).unwrap();
       setProduct(updated);
+      dispatch(setUpdatedProduct(updated));
       notificationApi.success({
         message: "Success",
         description: "Product successfully updated",
