@@ -145,6 +145,14 @@ const Products = () => {
 
   const columns: ColumnsType<Product> = [
     {
+      title: "Id",
+      width: 70,
+      dataIndex: "id",
+      key: "id",
+      sorter: (a, b) => a.id - b.id,
+      sortDirections: ["ascend", "descend"],
+    },
+    {
       title: "Image",
       key: "image",
       render: () => (
@@ -161,13 +169,6 @@ const Products = () => {
           <span>Image</span>
         </div>
       ),
-    },
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Name",
