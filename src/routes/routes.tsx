@@ -20,7 +20,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: isAuthenticated() ? (
-          <Navigate to="/product" replace />
+          <Navigate to="/products" replace />
         ) : (
           <Navigate to="/login" replace />
         ),
@@ -38,14 +38,14 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Navigate to="/product" replace />,
+                element: <Navigate to="/products" replace />,
               },
               {
-                path: "product",
+                path: "products",
                 element: <Products />,
               },
               {
-                path: "product/:id",
+                path: "products/:id",
                 element: <ProductDetails />,
               },
             ],

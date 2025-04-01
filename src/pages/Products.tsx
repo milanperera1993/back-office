@@ -5,7 +5,7 @@ import type { ColumnsType, TableProps } from "antd/es/table";
 import styled from "styled-components";
 import type { SorterResult } from "antd/es/table/interface";
 
-import { Product } from "../types/Product";
+import { Product } from "../types/common";
 import { ProductOutlined } from "@ant-design/icons";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import { useNavigate } from "react-router-dom";
@@ -255,7 +255,7 @@ const Products = () => {
           <ProductOutlined
             style={{ fontSize: "24px", cursor: "pointer" }}
             onClick={() =>
-              navigate(`/product/${record.id}`, {
+              navigate(`/products/${record.id}`, {
                 state: { product: record },
               })
             }

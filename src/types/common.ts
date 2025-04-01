@@ -9,3 +9,15 @@ export interface Product {
   category_id: number;
   attributes: AttributeValue[];
 }
+
+export interface Category {
+  id: number;
+  parent_id?: number;
+  name: string;
+}
+
+export interface CategoryResponse {
+  id: number;
+  name: string;
+  categories: Category[];
+}

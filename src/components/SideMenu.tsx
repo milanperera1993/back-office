@@ -22,17 +22,22 @@ const StyledMenu = styled(Menu)`
 
 interface SideMenuProps {
   menuItems: MenuProps["items"];
+  defaultSelectedKey: string;
 }
 
-const SideMenu = ({menuItems}: SideMenuProps) => {
+const SideMenu = ({ menuItems = [], defaultSelectedKey }: SideMenuProps) => {
+
+  const handleSelect: MenuProps["onSelect"] = (e) => {
+    console.log(e.key);
+  };
+
   return (
     <StyledMenu
       mode="inline"
       items={menuItems}
-      defaultOpenKeys={["1"]}
-      defaultSelectedKeys={["1-1"]}
+      defaultSelectedKeys={[defaultSelectedKey]}
       style={{ borderRight: 0 }}
-      onSelect={(e) => console.log("Selected:", e)}
+      onSelect={handleSelect}
     />
   );
 };

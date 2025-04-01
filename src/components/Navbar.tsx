@@ -68,11 +68,13 @@ const NavLabel = styled.span`
 interface NavBarProps {
   icons?: boolean;
   onBurgerClick?: () => void;
+  disableBurgerHandler?: boolean
 }
 
 const Navbar: React.FC<NavBarProps> = ({
   icons = true,
   onBurgerClick,
+  disableBurgerHandler = false,
 }) => {
   const screens = useBreakpoint();
   const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
@@ -93,7 +95,7 @@ const Navbar: React.FC<NavBarProps> = ({
         <Col>
           <Row align="middle" wrap={false}>
             {icons && (
-              <BurgerIconContainer onClick={onBurgerClick}>
+              <BurgerIconContainer onClick={disableBurgerHandler ? undefined : onBurgerClick}>
                 <MenuOutlined />
               </BurgerIconContainer>
             )}

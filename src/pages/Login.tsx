@@ -94,7 +94,7 @@ const LoginScreen: React.FC = () => {
     setIsFormValid(allFieldsFilled && !hasErrors);
   };
 
-  const from: string = (location.state as { from?: string })?.from || "/product";
+  const from: string = (location.state as { from?: string })?.from || "/products";
 
   // Redirect to the previous page if the user is already logged in
   useEffect(() => {
