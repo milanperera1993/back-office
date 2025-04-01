@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Grid } from "antd";
 import type { MenuProps } from "antd";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import SideDrawer from "../components/SideDrawer";
 import { DRAWER_WIDTH } from "../constants/dimensions";
 import SideMenu from "../components/SideMenu";
@@ -19,6 +19,8 @@ const StyledContent = styled(Content)`
 `;
 
 const ProductLayout: React.FC = () => {
+  const navigate = useNavigate();
+  const { categoryId } = useParams<{ categoryId: string }>();
   const screens = useBreakpoint();
   const isMobile = !screens.lg;
 
@@ -44,10 +46,17 @@ const ProductLayout: React.FC = () => {
       label: category.name,
     })) ?? [];
 
-    const defaultKey =
-    menuItems && menuItems.length > 0
+  const defaultKey =
+    categoryId ||
+    (menuItems && menuItems.length > 0
       ? (menuItems[0] as { key: string }).key
-      : "";  
+      : "");
+
+  useEffect(() => {
+    if (!categoryId && defaultKey) {
+      navigate(`/products/${defaultKey}`, { replace: true });
+    }
+  }, [categoryId, defaultKey, navigate]);
 
   return (
     <>

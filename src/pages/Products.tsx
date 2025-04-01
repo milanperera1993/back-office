@@ -8,7 +8,7 @@ import type { SorterResult } from "antd/es/table/interface";
 import { Product } from "../types/common";
 import { ProductOutlined } from "@ant-design/icons";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageSizeSelector from "../components/PageSizeSelector";
 
 const products: Product[] = [
@@ -125,6 +125,7 @@ const PaginationContainer = styled.div`
 const Products = () => {
   useVh();
   const navigate = useNavigate();
+  const {categoryId} = useParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -174,6 +175,9 @@ const Products = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const currentProducts = sortedProducts.slice(startIndex, endIndex);
+
+  
+  console.log(categoryId)
 
   const columns: ColumnsType<Product> = [
     {

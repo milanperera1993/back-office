@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Menu, MenuProps } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const StyledMenu = styled(Menu)`
   padding-top: 2rem;
@@ -26,9 +27,10 @@ interface SideMenuProps {
 }
 
 const SideMenu = ({ menuItems = [], defaultSelectedKey }: SideMenuProps) => {
-
+  const navigate = useNavigate()
   const handleSelect: MenuProps["onSelect"] = (e) => {
-    console.log(e.key);
+    navigate(`/products/${e.key}`);
+
   };
 
   return (

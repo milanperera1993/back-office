@@ -28,7 +28,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const loginUser = (user: User) => {
     setCurrentUser(user);
     localStorage.setItem("user", JSON.stringify(user));
-    navigate("/products");
+    navigate("/products", { replace: true });
   };
 
   const value: AuthContextType = {

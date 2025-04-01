@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import LoginLayout from "../layouts/LoginLayout";
 import Products from "../pages/Products";
@@ -7,24 +7,12 @@ import ErrorBoundary from "../pages/ErrorBoundary";
 import AdminRoute from "./AdminRoute";
 import ProductLayout from "../layouts/ProductLayout";
 
-const isAuthenticated = () => {
-  return false;
-}
-
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     errorElement: <ErrorBoundary/>,
     children: [
-      {
-        index: true,
-        element: isAuthenticated() ? (
-          <Navigate to="/products" replace />
-        ) : (
-          <Navigate to="/login" replace />
-        ),
-      },
       {
         path: "login",
         element: <LoginLayout />,
@@ -34,18 +22,14 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/",
-            element: <ProductLayout/>,
+            element: <ProductLayout />,
             children: [
               {
-                index: true,
-                element: <Navigate to="/products" replace />,
-              },
-              {
-                path: "products",
+                path: "products/:categoryId?",
                 element: <Products />,
               },
               {
-                path: "products/:id",
+                path: "products/:categoryId/details/:id",
                 element: <ProductDetails />,
               },
             ],
