@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Pagination } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
