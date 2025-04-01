@@ -1,55 +1,115 @@
-# React + TypeScript + Vite
+# Back Office
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a back office system built with React, Redux Toolkit, and Ant Design. It allows you to manage products by logging in, browsing categories, viewing product lists and details, and editing product attributes. The application is fully responsive and provides custom widgets for key functionalities.
 
-Currently, two official plugins are available:
+## Core Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **User Authentication:**  
+  Login to the back office using your email and password (it should be a valid email and any password). Users can also log out to clear their session and any state (such as the last modified product).
 
-## Expanding the ESLint configuration
+- **Category Navigation:**  
+  View and navigate a product category tree to quickly filter products by category.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Product Listing:**  
+  See a list of products in a selected category with configurable pagination (5, 10, 20, or 50 products per page).  
+  *Sort products by various fields (e.g., id, name) in both ascending and descending order.*
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **Product Details:**  
+  View detailed information about a product on a separate page. The details page displays product information including attributes.
+
+- **Product Attribute Management:**  
+  Add or modify attributes of a product. Supported attribute types include:  
+  - **Number**
+  - **Text**
+  - **URL**
+  - **Tags**
+  - **Boolean**
+
+- **Last Modified Product Widget:**  
+  See the last modified product in a custom widget at the top of the page. This component is fully custom-styled (not relying on third-party design library components) to display the product image, name, price, and other attributes.
+
+- **Logout:**  
+  End your session to securely log out of the back office and clear any persistent product state.
+
+## Demo
+
+A live demo is available: [Back Office Demo](https://back-office-ecru.vercel.app/)
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** (>= 14.x)
+- **npm** (>= 6.x)
+
+### Installation
+
+1. **Clone the repository:**
+
+   ```sh
+   git clone https://github.com/milanperera1993/back-office.git
+   cd back-office
+   ```
+
+2. **Install dependencies:**
+
+   ```sh
+   npm install
+   ```
+
+### Running the Project Locally
+
+Start the development server with:
+
+```sh
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This command uses Vite to serve the application. Open your browser at the provided URL to view the back office.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project Structure
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
 ```
-# back-office
+back-office/
+├── public/                      # Static assets and the main HTML file
+├── src/
+│   ├── components/              # Reusable React components (e.g., Navbar, LastUpdatedProduct, LoadingSpinner)
+│   ├── layouts/                 # Layout components (e.g., ProductLayout, LoginLayout)
+│   ├── pages/                   # Page components (e.g., Login, Products, ProductDetails)
+│   ├── provider/                # Context providers (e.g., AuthProvider)
+│   ├── redux/                   # Redux Toolkit slices and API services (e.g., productSlice, productsApi)
+│   ├── routes/                  # Application routing (e.g., PrivateRoute, routes)
+│   ├── utils/                   # Utility functions (e.g., common functions, URL helpers)
+│   ├── hooks/                   # Custom React hooks (e.g., useVh)
+│   └── types/                   # TypeScript type definitions (e.g., Product, Category)
+├── index.html                   # Main HTML file
+├── package.json                 # Project metadata and scripts
+├── tsconfig.json                # TypeScript configuration
+└── vite.config.ts               # Vite configuration
+```
+
+## Available Scripts
+
+- **`npm run dev`**: Start the development server with Vite.
+- **`npm run build`**: Build the project for production.
+- **`npm run preview`**: Preview the production build.
+- **`npm run lint`**: Run ESLint to lint the code.
+
+## Technologies
+
+- **React**  
+- **Redux Toolkit** & **RTK Query**  
+- **Ant Design v5**  
+- **Styled Components**  
+- **Vite**
+
+## License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- [React](https://reactjs.org/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [Ant Design](https://ant.design/)
+- [Vite](https://vitejs.dev/)
