@@ -4,6 +4,7 @@ import DashboardLayout from "../layouts/ProductLayout";
 import LoginLayout from "../layouts/LoginLayout";
 import Products from "../pages/Products";
 import ProductDetails from "../pages/ProductDetails";
+import ErrorBoundary from "../pages/ErrorBoundary";
 
 const isAuthenticated = () => {
   return false;
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ErrorBoundary/>,
     children: [
       {
         index: true,

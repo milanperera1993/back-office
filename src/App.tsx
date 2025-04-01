@@ -11,7 +11,6 @@ function App() {
         },
       }}
     >
-      {/* <NavBar icons={icons} /> */}
       <Outlet />
     </ConfigProvider>
   );

@@ -3,7 +3,6 @@ import { Menu, MenuProps } from "antd";
 
 const StyledMenu = styled(Menu)`
   padding-top: 2rem;
-  font-size: 16px;
   .ant-menu-item,
   .ant-menu-submenu-title {
     min-height: 60px;
