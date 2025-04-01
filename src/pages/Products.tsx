@@ -3,6 +3,8 @@ import { Table, Pagination } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
 import { Product } from "../types/Product";
+import useVh from "../hooks/useVh";
+import { NAVBAR_HEIGHT } from "../constants/dimensions";
 
 const products: Product[] = [
   {
@@ -99,19 +101,20 @@ const getInStock = (record: Product): boolean => {
 const TableContainer = styled.div`
   width: 100%;
   overflow-x: auto;
-  padding: 16px; /* optional padding */
+  padding: 16px; 
   box-sizing: border-box;
-  height: calc(100vh - 180px); /* Adjust height to fit within parent */
+  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 100px);
 `;
 
 const PaginationContainer = styled.div`
   display: flex;
-  justify-content: right;
+  justify-content: center;
   margin-top: 16px;
   bottom: 0;
 `;
 
 const Products = () => {
+  useVh()
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
 
