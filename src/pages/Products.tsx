@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { Table, Pagination } from "antd";
+import useVh from "../hooks/useVh";
+import { Table, Pagination, Select } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
+
 import { Product } from "../types/Product";
-import useVh from "../hooks/useVh";
+import { EditOutlined } from "@ant-design/icons";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
+
+const { Option } = Select;
 
 const products: Product[] = [
   {
@@ -101,30 +105,44 @@ const getInStock = (record: Product): boolean => {
 const TableContainer = styled.div`
   width: 100%;
   overflow-x: auto;
-  padding: 16px; 
   box-sizing: border-box;
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 100px);
+  position: relative;
+`;
+
+interface StyledTableProps {
+  columns: ColumnsType<Product>;
+}
+
+const StyledTable = styled(Table)<StyledTableProps>`
+  width: 100%;
 `;
 
 const PaginationContainer = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-top: 16px;
   bottom: 0;
 `;
 
 const Products = () => {
-  useVh()
+  useVh();
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
 
   const onPageChange = (page: number) => {
     setCurrentPage(page);
   };
 
+  const onPageSizeChange = (value: number) => {
+    setPageSize(value);
+    setCurrentPage(1); // Reset to first page when page size changes
+  };
+
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const currentProducts = products.slice(startIndex, endIndex);
+
   const columns: ColumnsType<Product> = [
     {
       title: "Image",
@@ -132,8 +150,8 @@ const Products = () => {
       render: () => (
         <div
           style={{
-            width: 80,
-            height: 80,
+            width: 60,
+            height: 60,
             background: "#f0f0f0",
             display: "flex",
             alignItems: "center",
@@ -191,19 +209,52 @@ const Products = () => {
         </div>
       ),
     },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      fixed: "right",
+      render: (_, record) => (
+        <div style={{ textAlign: "center" }}>
+          <EditOutlined
+            style={{ fontSize: "16px", cursor: "pointer" }}
+            onClick={() =>
+              console.log("Navigate to details for product", record.id)
+            }
+          />
+        </div>
+      ),
+    },
   ];
 
   return (
     <div style={{ position: "relative", height: "400px" }}>
       <TableContainer>
-        <Table
+        <StyledTable
           dataSource={currentProducts}
           columns={columns}
           rowKey="id"
           pagination={false}
+          scroll={{
+            x: 800,
+            scrollToFirstRowOnChange: true,
+          }}
+          sticky={{ offsetHeader: 0 }}
         />
       </TableContainer>
       <PaginationContainer>
+        <div>
+          <Select
+            defaultValue={pageSize}
+            onChange={onPageSizeChange}
+            style={{ width: 80 }}
+          >
+            <Option value={5}>5 / page</Option>
+            <Option value={10}>10 / page</Option>
+            <Option value={25}>25 / page</Option>
+            <Option value={50}>50 / page</Option>
+          </Select>
+        </div>
         <Pagination
           current={currentPage}
           pageSize={pageSize}
@@ -213,5 +264,6 @@ const Products = () => {
       </PaginationContainer>
     </div>
   );
-}
+};
+
 export default Products;
