@@ -96,6 +96,7 @@ const LoginScreen: React.FC = () => {
 
   const from: string = (location.state as { from?: string })?.from || "/product";
 
+  // Redirect to the previous page if the user is already logged in
   useEffect(() => {
     if (currentUser && location.pathname !== from) {
       navigate(from, { replace: true });
