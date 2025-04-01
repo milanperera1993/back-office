@@ -7,12 +7,16 @@ import {
   Descriptions,
   Grid,
   Layout,
+  Form,
+  Input,
+  Switch,
 } from "antd";
 import styled from "styled-components";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import useVh from "../hooks/useVh";
 import { useLocation } from "react-router-dom";
-import { Product } from "../types/common";
+import { AttributeValue, Category, Product } from "../types/common";
+import { useState } from "react";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -60,7 +64,6 @@ const Price = styled(Text)`
 `;
 
 const StyledButton = styled(Button)`
-  margin-top: 20px;
   width: 100%;
 
   @media (max-width: 768px) {
@@ -81,6 +84,17 @@ const FixedEditButton = styled(Button)`
   }
 `;
 
+const FixedActionContainer = styled.div`
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  padding: 0 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+`;
+
 const EmptyContainer = styled.div`
   display: flex;
   align-items: center;
@@ -92,14 +106,36 @@ const ProductDetails = () => {
   useVh();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
-
   const location = useLocation();
   const product = location.state?.product as Product;
+  const category = location.state?.category as Category;
+
+  // Manage edit mode
+  const [editing, setEditing] = useState(false);
+  const [form] = Form.useForm();
 
   // Helper function to get attribute value by code
   const getAttribute = (code: string) => {
     const attr = product.attributes.find((a) => a.code === code);
     return attr ? attr.value : "";
+  };
+
+  // Toggle to edit mode and set initial form values
+  const handleEditClick = () => {
+    form.setFieldsValue({
+      color: getAttribute("color"),
+      material: getAttribute("material"),
+      in_stock:
+        getAttribute("in_stock") === "true" ||
+        getAttribute("in_stock") === true,
+    });
+    setEditing(true);
+  };
+
+  // Save updated values
+  const handleSave = (values: AttributeValue) => {
+    console.log("Updated values:", values);
+    setEditing(false);
   };
 
   if (!product) {
@@ -118,45 +154,121 @@ const ProductDetails = () => {
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
             <ProductImageWrapper>
-              <ProductImage
-                src={product.image_url}
-                alt="Product"
-              />
+              <ProductImage src={product.image_url} alt="Product" />
             </ProductImageWrapper>
           </Col>
           <Col xs={24} md={12}>
             <ProductInfo>
               <Title level={2}>{product.name}</Title>
-              <Text type="secondary">Category: Furniture</Text>
+              <Text type="secondary">Category: {category?.name}</Text>
               <Divider />
               <Price>€{getAttribute("price")}</Price>
               <Divider />
-              <Descriptions
-                title="Product Details"
-                bordered
-                column={1}
-                size="small"
-              >
-                <Descriptions.Item label="Color">
-                  {getAttribute("color")}
-                </Descriptions.Item>
-                <Descriptions.Item label="Material">
-                  {getAttribute("material")}
-                </Descriptions.Item>
-                <Descriptions.Item label="In Stock">
-                  {getAttribute("in_stock") ? "Yes" : "No"}
-                </Descriptions.Item>
-              </Descriptions>
-              <Divider />
-              <StyledButton type="primary" size="large">
-                Edit Product
-              </StyledButton>
+              {editing ? (
+                <Form form={form} layout="vertical" onFinish={handleSave}>
+                  <Form.Item
+                    label="Color"
+                    name="color"
+                    rules={[
+                      { required: true, message: "Please input the color!" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="Material"
+                    name="material"
+                    rules={[
+                      { required: true, message: "Please input the material!" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="In Stock"
+                    name="in_stock"
+                    valuePropName="checked"
+                  >
+                    <Switch />
+                  </Form.Item>
+                  {!isMobile && (
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "16px",
+                        marginTop: "16px",
+                      }}
+                    >
+                      <StyledButton
+                        type="primary"
+                        htmlType="submit"
+                        style={{ flex: 1 }}
+                        size="large"
+                      >
+                        Save
+                      </StyledButton>
+                      <StyledButton
+                        size="large"
+                        onClick={() => setEditing(false)}
+                        style={{ flex: 1 }}
+                      >
+                        Cancel
+                      </StyledButton>
+                    </div>
+                  )}
+                </Form>
+              ) : (
+                <>
+                  <Descriptions
+                    title="Product Details"
+                    bordered
+                    column={1}
+                    size="small"
+                  >
+                    <Descriptions.Item label="Color">
+                      {getAttribute("color")}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Material">
+                      {getAttribute("material")}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="In Stock">
+                      {getAttribute("in_stock") === "true" ||
+                      getAttribute("in_stock") === true
+                        ? "Yes"
+                        : "No"}
+                    </Descriptions.Item>
+                  </Descriptions>
+                  <Divider />
+                  <StyledButton
+                    type="primary"
+                    size="large"
+                    onClick={handleEditClick}
+                  >
+                    Edit Product
+                  </StyledButton>
+                </>
+              )}
             </ProductInfo>
           </Col>
         </Row>
       </ProductContainer>
-      {isMobile && (
-        <FixedEditButton type="primary" size="large">
+      {isMobile && editing && (
+        <FixedActionContainer>
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => form.submit()}
+            block
+          >
+            Save
+          </Button>
+          <Button size="large" onClick={() => setEditing(false)} block>
+            Cancel
+          </Button>
+        </FixedActionContainer>
+      )}
+      {isMobile && !editing && (
+        <FixedEditButton type="primary" size="large" onClick={handleEditClick}>
           Edit Product
         </FixedEditButton>
       )}

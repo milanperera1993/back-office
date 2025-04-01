@@ -1,4 +1,4 @@
-interface AttributeValue {
+export interface AttributeValue {
   code: string;
   value: number | string | boolean;
 }

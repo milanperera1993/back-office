@@ -218,7 +218,7 @@ const Products = () => {
             style={{ fontSize: "24px", cursor: "pointer" }}
             onClick={() =>
               navigate(`/products/${categoryId}/details/${record.id}`, {
-                state: { product: record },
+                state: { product: record, category: category },
               })
             }
           />
