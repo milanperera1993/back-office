@@ -3,7 +3,7 @@ import App from "../App";
 import DashboardLayout from "../layouts/ProductLayout";
 import LoginLayout from "../layouts/LoginLayout";
 import Products from "../pages/Products";
-import ProductDetailed from "../pages/ProductDetailed";
+import ProductDetails from "../pages/ProductDetails";
 
 const isAuthenticated = () => {
   return false;
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
           },
           {
             path: "product/:id",
-            element: <ProductDetailed />,
+            element: <ProductDetails />,
           }
         ],
       },
