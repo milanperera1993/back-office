@@ -52,11 +52,18 @@ const ProductLayout: React.FC = () => {
       ? (menuItems[0] as { key: string }).key
       : "");
 
+  const defaultCategory =
+    categoriesResponse.categories.find(
+      (cat) => cat.id.toString() === defaultKey
+    ) || null;
+
   useEffect(() => {
     if (!categoryId && defaultKey) {
-      navigate(`/products/${defaultKey}`, { replace: true });
+      navigate(`/products/${defaultKey}`, {
+        state: { category: defaultCategory },
+      });
     }
-  }, [categoryId, defaultKey, navigate]);
+  }, [categoryId, defaultKey, defaultCategory, navigate]);
 
   return (
     <>
@@ -71,6 +78,7 @@ const ProductLayout: React.FC = () => {
         closeDrawer={closeDrawer}
       >
         <SideMenu
+          categoryResponse={categoriesResponse}
           onSelectItem={() => {
             setTimeout(() => {
               closeDrawer();

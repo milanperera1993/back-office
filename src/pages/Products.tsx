@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useVh from "../hooks/useVh";
 
-import { Table, Pagination, Skeleton } from "antd";
+import { Table, Pagination, Skeleton, Breadcrumb } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
-import { Product } from "../types/common";
+import { Category, Product } from "../types/common";
 import type { SorterResult } from "antd/es/table/interface";
 
 import styled from "styled-components";
@@ -35,7 +35,7 @@ const TableContainer = styled.div`
   width: 100%;
   overflow-x: auto;
   box-sizing: border-box;
-  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 100px);
+  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 130px);
   position: relative;
 `;
 
@@ -59,6 +59,9 @@ const Products = () => {
   const [sortedInfo, setSortedInfo] = useState<SorterResult<Product>>(
     {} as SorterResult<Product>
   );
+
+  const location = useLocation();
+  const category = location.state?.category as Category
 
   const { data: productsResponse, isLoading } = useFetchProductsQuery();
 
@@ -226,6 +229,15 @@ const Products = () => {
 
   return (
     <div style={{ position: "relative", height: "400px" }}>
+      <Breadcrumb style={{ marginBottom: "16px", padding: "0 16px" }}
+      items={[
+        {
+          title: "Products",
+        },
+        {
+          title: category?.name,
+        },
+      ]} />
       <TableContainer>
         <StyledTable
           dataSource={currentProducts}
@@ -251,6 +263,7 @@ const Products = () => {
           total={productsList.length}
           onChange={onPageChange}
           showSizeChanger={false}
+          showLessItems={true}
         />
       </PaginationContainer>
     </div>

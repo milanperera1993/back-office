@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { Menu, MenuProps } from "antd";
 import { useNavigate } from "react-router-dom";
+import { CategoryResponse } from "../types/common";
 
 const StyledMenu = styled(Menu)`
   padding-top: 2rem;
@@ -24,14 +25,25 @@ const StyledMenu = styled(Menu)`
 interface SideMenuProps {
   menuItems: MenuProps["items"];
   defaultSelectedKey: string;
-  onSelectItem: () => void
+  onSelectItem: () => void;
+  categoryResponse: CategoryResponse;
 }
 
-const SideMenu = ({ menuItems = [], defaultSelectedKey, onSelectItem }: SideMenuProps) => {
-  const navigate = useNavigate()
+const SideMenu = ({
+  menuItems = [],
+  defaultSelectedKey,
+  onSelectItem,
+  categoryResponse,
+}: SideMenuProps) => {
+  const navigate = useNavigate();
   const handleSelect: MenuProps["onSelect"] = (e) => {
-    navigate(`/products/${e.key}`);
-    onSelectItem()
+    const selectedCategory = categoryResponse.categories.find(
+      (cat) => cat.id.toString() === e.key
+    );
+    navigate(`/products/${e.key}`, {
+      state: { category: selectedCategory },
+    });
+    onSelectItem();
   };
 
   return (
