@@ -1,14 +1,25 @@
-import { Row, Col, Typography, Button, Divider, Descriptions, Grid } from 'antd';
-import styled from 'styled-components';
-import { NAVBAR_HEIGHT } from '../constants/dimensions';
-import useVh from '../hooks/useVh';
+import {
+  Row,
+  Col,
+  Typography,
+  Button,
+  Divider,
+  Descriptions,
+  Grid,
+  Layout,
+} from "antd";
+import styled from "styled-components";
+import { NAVBAR_HEIGHT } from "../constants/dimensions";
+import useVh from "../hooks/useVh";
+import { useLocation } from "react-router-dom";
+import { Product } from "../types/common";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const ProductContainer = styled.div`
   margin: 0 auto;
-  overflow-y: auto; 
+  overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
@@ -18,7 +29,7 @@ const ProductContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   @media (max-width: 768px) {
     align-items: flex-start;
     padding-top: 16px;
@@ -51,7 +62,7 @@ const Price = styled(Text)`
 const StyledButton = styled(Button)`
   margin-top: 20px;
   width: 100%;
-  
+
   @media (max-width: 768px) {
     display: none; /* hide inline button on smaller screens */
   }
@@ -64,10 +75,17 @@ const FixedEditButton = styled(Button)`
   transform: translateX(-50%);
   z-index: 1000;
   width: 90%;
-  
+
   @media (min-width: 769px) {
     display: none;
   }
+`;
+
+const EmptyContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
 `;
 
 const ProductDetails = () => {
@@ -75,22 +93,24 @@ const ProductDetails = () => {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
-  const product = {
-    id: 1,
-    name: "Modern Leather Sofa",
-    category_id: 3,
-    attributes: [
-      { code: "color", value: "brown" },
-      { code: "material", value: "leather" },
-      { code: "price", value: 999.99 },
-      { code: "in_stock", value: true },
-    ],
-  };
+  const location = useLocation();
+  const product = location.state?.product as Product;
 
+  // Helper function to get attribute value by code
   const getAttribute = (code: string) => {
     const attr = product.attributes.find((a) => a.code === code);
     return attr ? attr.value : "";
   };
+
+  if (!product) {
+    return (
+      <Layout>
+        <EmptyContainer>
+          <h2>No product details available.</h2>
+        </EmptyContainer>
+      </Layout>
+    );
+  }
 
   return (
     <>
@@ -98,9 +118,9 @@ const ProductDetails = () => {
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
             <ProductImageWrapper>
-              <ProductImage 
-                src="https://cdn1.home24.net/images/media/catalog/product/1000x1000/jpg/c/c/cc7b691811bf4a308a4284b667928563.avif" 
-                alt="Product" 
+              <ProductImage
+                src="https://cdn1.home24.net/images/media/catalog/product/1000x1000/jpg/c/c/cc7b691811bf4a308a4284b667928563.avif"
+                alt="Product"
               />
             </ProductImageWrapper>
           </Col>
@@ -111,15 +131,23 @@ const ProductDetails = () => {
               <Divider />
               <Price>€{getAttribute("price")}</Price>
               <Divider />
-              <Descriptions title="Product Details" bordered column={1} size="small">
-                <Descriptions.Item label="Color">{getAttribute("color")}</Descriptions.Item>
-                <Descriptions.Item label="Material">{getAttribute("material")}</Descriptions.Item>
+              <Descriptions
+                title="Product Details"
+                bordered
+                column={1}
+                size="small"
+              >
+                <Descriptions.Item label="Color">
+                  {getAttribute("color")}
+                </Descriptions.Item>
+                <Descriptions.Item label="Material">
+                  {getAttribute("material")}
+                </Descriptions.Item>
                 <Descriptions.Item label="In Stock">
-                  {getAttribute("in_stock") ? 'Yes' : 'No'}
+                  {getAttribute("in_stock") ? "Yes" : "No"}
                 </Descriptions.Item>
               </Descriptions>
               <Divider />
-              <Paragraph>Sample description</Paragraph>
               <StyledButton type="primary" size="large">
                 Edit Product
               </StyledButton>

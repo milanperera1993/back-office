@@ -15,12 +15,12 @@ const categoriesApi = createApi({
   baseQuery: baseQuerty,
   tagTypes: ["Categories"],
   endpoints: (builder) => ({
-    getCategories: builder.query<CategoryResponse, void>({
+    fetchCategories: builder.query<CategoryResponse, void>({
       query: () => "/",
       providesTags: ["Categories"],
     }),
   }),
 })
 
-export const { useGetCategoriesQuery } = categoriesApi;
+export const { useFetchCategoriesQuery } = categoriesApi;
 export default categoriesApi;

@@ -7,7 +7,7 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import SideDrawer from "../components/SideDrawer";
 import { DRAWER_WIDTH } from "../constants/dimensions";
 import SideMenu from "../components/SideMenu";
-import { useGetCategoriesQuery } from "../redux/categories/categoriesApi";
+import { useFetchCategoriesQuery } from "../redux/categories/categoriesApi";
 import { CategoryResponse } from "../types/common";
 
 const { Content } = Layout;
@@ -38,7 +38,7 @@ const ProductLayout: React.FC = () => {
     data: categoriesResponse = defaultCategoryResponse,
     isLoading,
     isError,
-  } = useGetCategoriesQuery();
+  } = useFetchCategoriesQuery();
 
   const menuItems: MenuProps["items"] =
     categoriesResponse?.categories?.map((category) => ({

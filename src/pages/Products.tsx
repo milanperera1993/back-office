@@ -1,101 +1,29 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import useVh from "../hooks/useVh";
-import { Table, Pagination } from "antd";
+
+import { Table, Pagination, Skeleton } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
-import styled from "styled-components";
+import { Product } from "../types/common";
 import type { SorterResult } from "antd/es/table/interface";
 
-import { Product } from "../types/common";
+import styled from "styled-components";
+
 import { ProductOutlined } from "@ant-design/icons";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
-import { useNavigate, useParams } from "react-router-dom";
+
 import PageSizeSelector from "../components/PageSizeSelector";
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Modern Leather Sofa",
-    category_id: 3,
-    attributes: [
-      { code: "color", value: "brown" },
-      { code: "material", value: "leather" },
-      { code: "price", value: 999.99 },
-      { code: "in_stock", value: true },
-    ],
-  },
-  {
-    id: 2,
-    name: "Glass Coffee Table",
-    category_id: 4,
-    attributes: [
-      { code: "color", value: "transparent" },
-      { code: "dimensions", value: "120x60x45 cm" },
-      { code: "price", value: 299.99 },
-      { code: "in_stock", value: false },
-    ],
-  },
-  {
-    id: 3,
-    name: "Glass Coffee Table",
-    category_id: 4,
-    attributes: [
-      { code: "color", value: "transparent" },
-      { code: "dimensions", value: "120x60x45 cm" },
-      { code: "price", value: 299.99 },
-      { code: "in_stock", value: false },
-    ],
-  },
-  {
-    id: 4,
-    name: "Glass Coffee Table",
-    category_id: 4,
-    attributes: [
-      { code: "color", value: "transparent" },
-      { code: "dimensions", value: "120x60x45 cm" },
-      { code: "price", value: 299.99 },
-      { code: "in_stock", value: false },
-    ],
-  },
-  {
-    id: 5,
-    name: "Glass Coffee Table",
-    category_id: 4,
-    attributes: [
-      { code: "color", value: "transparent" },
-      { code: "dimensions", value: "120x60x45 cm" },
-      { code: "price", value: 299.99 },
-      { code: "in_stock", value: false },
-    ],
-  },
-  {
-    id: 6,
-    name: "Glass Coffee Table",
-    category_id: 4,
-    attributes: [
-      { code: "color", value: "transparent" },
-      { code: "dimensions", value: "120x60x45 cm" },
-      { code: "price", value: 299.99 },
-      { code: "in_stock", value: false },
-    ],
-  },
-  {
-    id: 7,
-    name: "Glass Coffee Table",
-    category_id: 4,
-    attributes: [
-      { code: "color", value: "transparent" },
-      { code: "dimensions", value: "120x60x45 cm" },
-      { code: "price", value: 1999.99 },
-      { code: "in_stock", value: false },
-    ],
-  },
-];
+import { useFetchProductsQuery } from "../redux/products/productsApi";
 
+
+// Helper functions to get price
 const getPrice = (record: Product): number => {
   const priceAttr = record.attributes.find((attr) => attr.code === "price");
   return typeof priceAttr?.value === "number" ? priceAttr.value : 0;
 };
 
+// Helper function to get in stock status
 const getInStock = (record: Product): boolean => {
   const inStockAttr = record.attributes.find(
     (attr) => attr.code === "in_stock"
@@ -125,36 +53,36 @@ const PaginationContainer = styled.div`
 const Products = () => {
   useVh();
   const navigate = useNavigate();
-  const {categoryId} = useParams<{ categoryId: string }>();
+  const { categoryId } = useParams<{ categoryId: string }>();
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-
+  const [pageSize, setPageSize] = useState(25);
   const [sortedInfo, setSortedInfo] = useState<SorterResult<Product>>(
     {} as SorterResult<Product>
   );
 
-  const onPageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  const { data: productsResponse, isLoading } = useFetchProductsQuery();
 
-  const onPageSizeChange = (value: number) => {
-    setPageSize(value);
-    setCurrentPage(1);
-  };
+  if (isLoading || !productsResponse || !categoryId) {
+    return (
+      <div style={{ position: "relative", height: "400px" }}>
+        <TableContainer>
+          <Skeleton active paragraph={{ rows: 6 }} />
+        </TableContainer>
+      </div>
+    );
+  }
+  let productsList: Product[] = Array.isArray(productsResponse)
+    ? productsResponse
+    : [productsResponse];
 
-  const handleTableChange: TableProps<Product>["onChange"] = (
-    _pagination,
-    _filters,
-    sorter
-  ) => {
-    if (Array.isArray(sorter)) {
-      setSortedInfo(sorter[0]);
-    } else {
-      setSortedInfo(sorter);
-    }
-  };
+  if (categoryId !== "2") {
+    productsList = productsList.filter(
+      (product) => product.category_id === Number(categoryId)
+    );
+  }
 
-  const sortedProducts = [...products];
+  // Sort products based on sortedInfo
+  const sortedProducts = [...productsList];
   if (sortedInfo && sortedInfo.order && sortedInfo.columnKey) {
     sortedProducts.sort((a, b) => {
       const key = sortedInfo.columnKey;
@@ -176,8 +104,27 @@ const Products = () => {
   const endIndex = startIndex + pageSize;
   const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
-  
-  console.log(categoryId)
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const onPageSizeChange = (value: number) => {
+    setPageSize(value);
+    setCurrentPage(1);
+  };
+
+  // Handle table change event
+  const handleTableChange: TableProps<Product>["onChange"] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
+    if (Array.isArray(sorter)) {
+      setSortedInfo(sorter[0]);
+    } else {
+      setSortedInfo(sorter);
+    }
+  };
 
   const columns: ColumnsType<Product> = [
     {
@@ -191,7 +138,7 @@ const Products = () => {
     {
       title: "Image",
       key: "image",
-      render: () => (
+      render: (_, record) => (
         <div
           style={{
             width: 60,
@@ -202,7 +149,15 @@ const Products = () => {
             justifyContent: "center",
           }}
         >
-          <span>Image</span>
+          {record.image_url ? (
+            <img
+              src={record.image_url}
+              alt={record.name}
+              style={{ maxWidth: "100%", maxHeight: "100%" }}
+            />
+          ) : (
+            <span>Image</span>
+          )}
         </div>
       ),
     },
@@ -259,7 +214,7 @@ const Products = () => {
           <ProductOutlined
             style={{ fontSize: "24px", cursor: "pointer" }}
             onClick={() =>
-              navigate(`/products/${record.id}`, {
+              navigate(`/products/${categoryId}/details/${record.id}`, {
                 state: { product: record },
               })
             }
@@ -293,8 +248,9 @@ const Products = () => {
         <Pagination
           current={currentPage}
           pageSize={pageSize}
-          total={products.length}
+          total={productsList.length}
           onChange={onPageChange}
+          showSizeChanger={false}
         />
       </PaginationContainer>
     </div>
