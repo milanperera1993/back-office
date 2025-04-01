@@ -68,10 +68,9 @@ const NavLabel = styled.span`
 interface NavBarProps {
   icons?: boolean;
   onBurgerClick?: () => void;
-  drawerVisible?: boolean;
 }
 
-const Navbar: React.FC<NavBarProps> = ({ icons = true, onBurgerClick, drawerVisible = false }) => {
+const Navbar: React.FC<NavBarProps> = ({ icons = true, onBurgerClick }) => {
   const screens = useBreakpoint();
   const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
 
@@ -80,17 +79,17 @@ const Navbar: React.FC<NavBarProps> = ({ icons = true, onBurgerClick, drawerVisi
       <Row style={{ width: "100%" }} align="middle" justify="space-between" wrap={false}>
         <Col>
           <Row align="middle" wrap={false}>
-            {drawerVisible && (
+            {icons && (
               <BurgerIconContainer onClick={onBurgerClick}>
                 <MenuOutlined />
               </BurgerIconContainer>
             )}
-            { drawerVisible && <Logo>
+            <Logo>
               <img
                 src="https://www.home24.de/corgi/pageapps/prepurchase/_next/static/media/home-24-logo.192e9885.svg"
                 alt="Home24 Logo"
               />
-            </Logo>}
+            </Logo>
           </Row>
         </Col>
         <Col>
