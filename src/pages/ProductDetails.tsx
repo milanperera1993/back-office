@@ -1,6 +1,7 @@
 import { Row, Col, Typography, Button, Divider, Descriptions } from 'antd';
 import styled from 'styled-components';
 import { NAVBAR_HEIGHT } from '../constants/dimensions';
+import useVh from '../hooks/useVh';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -16,6 +17,11 @@ const ProductContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  @media (max-width: 768px) {
+    align-items: flex-start; /* top align on smaller devices */
+    padding-top: 16px;
+  }
 `;
 
 const ProductImageWrapper = styled.div`
@@ -46,6 +52,7 @@ const StyledButton = styled(Button)`
 `;
 
 const ProductDetails = () => {
+  useVh()
   const product = {
     id: 1,
     name: "Modern Leather Sofa",
