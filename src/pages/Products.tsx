@@ -136,7 +136,7 @@ const Products = () => {
 
   const onPageSizeChange = (value: number) => {
     setPageSize(value);
-    setCurrentPage(1); // Reset to first page when page size changes
+    setCurrentPage(1);
   };
 
   const startIndex = (currentPage - 1) * pageSize;
@@ -212,10 +212,11 @@ const Products = () => {
     {
       title: "Actions",
       key: "actions",
-      width: 120,
+      width: 100,
+      align:"right",
       fixed: "right",
       render: (_, record) => (
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "right" }}>
           <EditOutlined
             style={{ fontSize: "16px", cursor: "pointer" }}
             onClick={() =>
