@@ -136,13 +136,13 @@ const Navbar: React.FC<NavBarProps> = ({
                 >
                   <NavIcon>
                     <ClockCircleOutlined />
-                    <NavLabel>Updated</NavLabel>
+                    <NavLabel>Updates(1)</NavLabel>
                   </NavIcon>
                 </Dropdown>
               ) : (
                 <NavIcon>
                   <ClockCircleOutlined />
-                  <NavLabel>No update</NavLabel>
+                  <NavLabel>Updates(0)</NavLabel>
                 </NavIcon>
               )}
             </NavRight>

@@ -1,15 +1,13 @@
+import { useEffect, useState } from "react";
 import {
   Row,
   Col,
   Typography,
   Button,
   Divider,
-  Descriptions,
   Grid,
   Layout,
   Form,
-  Input,
-  Switch,
   notification,
 } from "antd";
 import styled from "styled-components";
@@ -17,15 +15,19 @@ import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import useVh from "../hooks/useVh";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Category, Product } from "../types/common";
-import { useEffect, useState } from "react";
 import {
   useFetchProductByIdQuery,
   useUpdateProductMutation,
 } from "../redux/products/productsApi";
 import { useDispatch } from "react-redux";
 import { setUpdatedProduct } from "../redux/products/productSlice";
+import ProductImageDisplay from "../components/product/ProductImageDisplay";
+import ProductHeader from "../components/product/ProductHeader";
+import ProductDetailsInfo from "../components/product/ProductDetailsInfo";
+import ProductEditForm from "../components/product/ProductEditForm";
+import MobileFixedActions from "../components/product/MobileFixedActions";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
 const ProductContainer = styled.div`
@@ -48,18 +50,6 @@ const ProductContainer = styled.div`
   }
 `;
 
-const ProductImageWrapper = styled.div`
-  width: 100%;
-  overflow: hidden;
-  border-radius: 8px;
-`;
-
-const ProductImage = styled.img`
-  width: 100%;
-  height: auto;
-  display: block;
-`;
-
 const ProductInfo = styled.div`
   padding: 0 16px;
 `;
@@ -70,11 +60,11 @@ const Price = styled(Text)`
   color: #ff4d4f;
 `;
 
-const StyledButton = styled(Button)`
+export const StyledButton = styled(Button)`
   width: 100%;
 
   @media (max-width: 768px) {
-    display: none; /* hide inline button on smaller screens */
+    display: none; /* Hide inline button on smaller screens */
   }
 `;
 
@@ -91,25 +81,13 @@ const FixedEditButton = styled(Button)`
   }
 `;
 
-const FixedActionContainer = styled.div`
-  position: fixed;
-  bottom: 16px;
-  left: 0;
-  right: 0;
-  padding: 0 16px;
-  z-index: 1000;
-  display: flex;
-  gap: 8px;
-`;
-
 const EmptyContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
 `;
-
-interface ProductFormValues {
+export interface ProductFormValues {
   color: string;
   material: string;
   in_stock: boolean;
@@ -119,43 +97,41 @@ const ProductDetails = () => {
   useVh();
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const initialProduct = location.state?.product as Product;
   const category = location.state?.category as Category;
-
   const [product, setProduct] = useState<Product>(initialProduct);
+  const [editing, setEditing] = useState<boolean>(false);
+  const [form] = Form.useForm<ProductFormValues>();
 
   const [updateProduct, { isLoading }] = useUpdateProductMutation();
   const { data: fetchedProduct, refetch } = useFetchProductByIdQuery(
     product.id
   );
 
+  const [notificationApi, contextHolder] = notification.useNotification();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
-  const [notificationApi, contextHolder] = notification.useNotification();
-
+  // Update product state when new data is fetched
   useEffect(() => {
     if (fetchedProduct) {
       setProduct(fetchedProduct);
     }
   }, [fetchedProduct]);
 
-  const [editing, setEditing] = useState(false);
-  const [form] = Form.useForm();
-
-  // Helper function to get attribute value by code
-  const getAttribute = (code: string) => {
+  // Helper to safely retrieve an attribute value from the product
+  const getAttribute = (code: string): string | number | boolean => {
     const attr = product.attributes.find((a) => a.code === code);
     return attr ? attr.value : "";
   };
 
-  // Toggle to edit mode and set initial form values
-  const handleEditClick = () => {
+  // Toggle edit mode and set form fields with current attribute values
+  const handleEditClick = (): void => {
     form.setFieldsValue({
-      color: getAttribute("color"),
-      material: getAttribute("material"),
+      color: String(getAttribute("color")),
+      material: String(getAttribute("material")),
       in_stock:
         getAttribute("in_stock") === "true" ||
         getAttribute("in_stock") === true,
@@ -163,8 +139,8 @@ const ProductDetails = () => {
     setEditing(true);
   };
 
-  // Save updated values
-  const handleSave = async (values: ProductFormValues) => {
+  // Save updated product data
+  const handleSave = async (values: ProductFormValues): Promise<void> => {
     const updatedProduct: Product = {
       ...product,
       attributes: product.attributes.map((attr) => {
@@ -197,7 +173,7 @@ const ProductDetails = () => {
       });
     } catch (error) {
       console.error("Failed to update product:", error);
-      notificationApi.success({
+      notificationApi.error({
         message: "Error",
         description: "Failed to update product",
         placement: "topRight",
@@ -205,6 +181,14 @@ const ProductDetails = () => {
     } finally {
       setEditing(false);
     }
+  };
+
+  const handleCancelEdit = (): void => {
+    setEditing(false);
+  };
+
+  const handleMobileSave = (): void => {
+    form.submit();
   };
 
   if (!product) {
@@ -223,94 +207,29 @@ const ProductDetails = () => {
       <ProductContainer>
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
-            <ProductImageWrapper>
-              <ProductImage src={product.image_url} alt="Product" />
-            </ProductImageWrapper>
+            <ProductImageDisplay
+              imageUrl={product.image_url || ""}
+              alt="Product"
+            />
           </Col>
           <Col xs={24} md={12}>
             <ProductInfo>
-              <Title level={2}>{product.name}</Title>
-              <Text type="secondary">Category: {category?.name}</Text>
-              <Divider />
-              <Price>€{getAttribute("price")}</Price>
-              <Divider />
+              <ProductHeader product={product} category={category} />
               {editing ? (
-                <Form form={form} layout="vertical" onFinish={handleSave}>
-                  <Form.Item
-                    label="Color"
-                    name="color"
-                    rules={[
-                      { required: true, message: "Please input the color!" },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    label="Material"
-                    name="material"
-                    rules={[
-                      { required: true, message: "Please input the material!" },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    label="In Stock"
-                    name="in_stock"
-                    valuePropName="checked"
-                  >
-                    <Switch />
-                  </Form.Item>
-                  {!isMobile && (
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "16px",
-                        marginTop: "16px",
-                      }}
-                    >
-                      <StyledButton
-                        type="primary"
-                        htmlType="submit"
-                        style={{ flex: 1 }}
-                        size="large"
-                        disabled={isLoading}
-                      >
-                        Save
-                      </StyledButton>
-                      <StyledButton
-                        size="large"
-                        onClick={() => setEditing(false)}
-                        style={{ flex: 1 }}
-                        disabled={isLoading}
-                      >
-                        Cancel
-                      </StyledButton>
-                    </div>
-                  )}
-                </Form>
+                <>
+                  <Price>€{getAttribute("price")}</Price>
+                  <Divider />
+                  <ProductEditForm
+                    form={form}
+                    isLoading={isLoading}
+                    onFinish={handleSave}
+                    showInlineButtons={!isMobile}
+                    onCancel={handleCancelEdit}
+                  />
+                </>
               ) : (
                 <>
-                  <Descriptions
-                    title="Product Details"
-                    bordered
-                    column={1}
-                    size="small"
-                  >
-                    <Descriptions.Item label="Color">
-                      {getAttribute("color")}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Material">
-                      {getAttribute("material")}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="In Stock">
-                      {getAttribute("in_stock") === "true" ||
-                      getAttribute("in_stock") === true
-                        ? "Yes"
-                        : "No"}
-                    </Descriptions.Item>
-                  </Descriptions>
-                  <Divider />
+                  <ProductDetailsInfo getAttribute={getAttribute} />
                   <StyledButton
                     type="primary"
                     size="large"
@@ -326,25 +245,11 @@ const ProductDetails = () => {
         </Row>
       </ProductContainer>
       {isMobile && editing && (
-        <FixedActionContainer>
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => form.submit()}
-            block
-            disabled={isLoading}
-          >
-            Save
-          </Button>
-          <Button
-            size="large"
-            onClick={() => setEditing(false)}
-            block
-            disabled={isLoading}
-          >
-            Cancel
-          </Button>
-        </FixedActionContainer>
+        <MobileFixedActions
+          isLoading={isLoading}
+          onSave={handleMobileSave}
+          onCancel={handleCancelEdit}
+        />
       )}
       {isMobile && !editing && (
         <FixedEditButton
@@ -359,5 +264,4 @@ const ProductDetails = () => {
     </>
   );
 };
-
 export default ProductDetails;

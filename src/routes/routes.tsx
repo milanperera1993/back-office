@@ -4,7 +4,7 @@ import LoginLayout from "../layouts/LoginLayout";
 import Products from "../pages/Products";
 import ProductDetails from "../pages/ProductDetails";
 import ErrorBoundary from "../pages/ErrorBoundary";
-import AdminRoute from "./AdminRoute";
+import PrivateRoute from "./PrivateRoute";
 import ProductLayout from "../layouts/ProductLayout";
 
 const router = createBrowserRouter([
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
         element: <LoginLayout />,
       },
       {
-        element: <AdminRoute />,
+        element: <PrivateRoute />,
         children: [
           {
             path: "/",

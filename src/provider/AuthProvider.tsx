@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { AuthContext, AuthContextType, User } from "./util";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearUpdatedProduct } from "../redux/products/productSlice";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -10,14 +13,17 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   /**
    * Function to log out the user.
    * sets the current user to null and removes the user from localStorage.
+   * clears the updated product from the redux store.
    */
   const logoutUser = () => {
     setCurrentUser(null);
     localStorage.removeItem("user");
+    dispatch(clearUpdatedProduct())
   }
 
   /**
@@ -52,9 +58,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     setLoading(false);
   }, []);
 
-  //TODO: handle loading properly
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner/>
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
