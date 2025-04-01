@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import { Button, Form, Input, Typography } from "antd";
 import useVh from "../hooks/useVh";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
+import { AuthContext } from "../provider/util";
 
 const { Title } = Typography;
 
@@ -63,7 +64,9 @@ const StyledButton = styled(Button)<{ $valid: boolean }>`
 const LoginScreen: React.FC = () => {
   // Custom hook to set the viewport height and removing resizing issues in mobile view.
   useVh();
-  const naviagte = useNavigate()
+  const { loginUser, currentUser } =useContext(AuthContext)
+  const navigate = useNavigate()
+  const location = useLocation();
 
   const [form] = Form.useForm();
   const [isFormValid, setIsFormValid] = useState(false);
@@ -73,8 +76,7 @@ const LoginScreen: React.FC = () => {
    * @param values
    */
   const onFinish = (values: LoginFormValues) => {
-    naviagte("/product");
-    console.log("Form values:", values);
+    loginUser({email: values.email});
   };
 
   /**
@@ -91,6 +93,15 @@ const LoginScreen: React.FC = () => {
 
     setIsFormValid(allFieldsFilled && !hasErrors);
   };
+
+  const from: string = (location.state as { from?: string })?.from || "/product";
+
+  useEffect(() => {
+    if (currentUser && location.pathname !== from) {
+      navigate(from, { replace: true });
+    }
+  }, [currentUser, from, location.pathname, navigate]);
+
 
   return (
     <Container>

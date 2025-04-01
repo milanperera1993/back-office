@@ -1,8 +1,8 @@
 import { ConfigProvider } from "antd";
 import { Outlet } from "react-router-dom";
+import AuthProvider from "./provider/AuthProvider";
 
 function App() {
-
   return (
     <ConfigProvider
       theme={{
@@ -11,7 +11,9 @@ function App() {
         },
       }}
     >
-      <Outlet />
+      <AuthProvider>
+        <Outlet />
+      </AuthProvider>
     </ConfigProvider>
   );
 }

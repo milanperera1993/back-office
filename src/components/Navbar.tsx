@@ -1,8 +1,8 @@
-// Navbar.tsx
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { Layout, Row, Col, Grid } from "antd";
+import { Layout, Row, Col, Grid, Dropdown } from "antd";
+import { AuthContext } from "../provider/util";
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -70,13 +70,26 @@ interface NavBarProps {
   onBurgerClick?: () => void;
 }
 
-const Navbar: React.FC<NavBarProps> = ({ icons = true, onBurgerClick }) => {
+const Navbar: React.FC<NavBarProps> = ({
+  icons = true,
+  onBurgerClick,
+}) => {
   const screens = useBreakpoint();
   const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
+  const {logoutUser} = useContext(AuthContext);
+
+  const logoutHandler = () => {
+    logoutUser();
+  }
 
   return (
     <StyledHeader padding={headerPadding}>
-      <Row style={{ width: "100%" }} align="middle" justify="space-between" wrap={false}>
+      <Row
+        style={{ width: "100%" }}
+        align="middle"
+        justify="space-between"
+        wrap={false}
+      >
         <Col>
           <Row align="middle" wrap={false}>
             {icons && (
@@ -95,10 +108,24 @@ const Navbar: React.FC<NavBarProps> = ({ icons = true, onBurgerClick }) => {
         <Col>
           {icons && (
             <NavRight>
-              <NavIcon>
-                <UserOutlined />
-                <NavLabel>Profile</NavLabel>
-              </NavIcon>
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "logout",
+                      label: "Logout",
+                      onClick: logoutHandler,
+                    },
+                  ],
+                }}
+                trigger={["click"]}
+                placement="bottomRight"
+              >
+                <NavIcon>
+                  <UserOutlined />
+                  <NavLabel>Profile</NavLabel>
+                </NavIcon>
+              </Dropdown>
             </NavRight>
           )}
         </Col>
