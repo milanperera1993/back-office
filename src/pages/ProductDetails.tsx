@@ -119,7 +119,7 @@ const ProductDetails = () => {
           <Col xs={24} md={12}>
             <ProductImageWrapper>
               <ProductImage
-                src="https://cdn1.home24.net/images/media/catalog/product/1000x1000/jpg/c/c/cc7b691811bf4a308a4284b667928563.avif"
+                src={product.image_url}
                 alt="Product"
               />
             </ProductImageWrapper>
