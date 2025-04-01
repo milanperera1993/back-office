@@ -5,10 +5,10 @@ This project is a back office system built with React, Redux Toolkit, and Ant De
 ## Core Features
 
 - **User Authentication:**  
-  Login to the back office using your email and password (it should be a valid email and any password). Users can also log out to clear their session and any state (such as the last modified product).
+  Login to the back office using your email and password (the login functionality is purely mocked, however the form is validated). Users can also log out to clear their session and any state (such as the last modified product).
 
 - **Category Navigation:**  
-  View and navigate a product category tree to quickly filter products by category.
+  View and navigate a product category tree displayed in a drawer. It can ideally cater to nested sub-categories.
 
 - **Product Listing:**  
   See a list of products in a selected category with configurable pagination (5, 10, 20, or 50 products per page).  
@@ -34,6 +34,40 @@ This project is a back office system built with React, Redux Toolkit, and Ant De
 ## Demo
 
 A live demo is available: [Back Office Demo](https://back-office-ecru.vercel.app/)
+
+## Assumptions and Decisions
+
+1. **Login Functionality:**  
+   The login functionality is purely mocked. Although the form validates input, no real backend is used for authentication.
+
+2. **Category Tree:**  
+   The category tree is implemented in a drawer which can ideally cater to nested sub-categories.
+
+3. **Configuration:**  
+   Even though URLs and similar configuration values should be externalized into environment variables, they are included inline for simplicity.
+
+4. **Design:**  
+   The design was based on the existing platform's branding, color palette, and overall aesthetic.
+
+5. **Data Generation:**  
+   Products and categories are generated using a custom script with duplicated images and generic product names.
+
+6. **Mock Data:**  
+   The mock data is served by a JSON server hosted on Render.
+
+## Improvements
+
+1. **Nested Category Data:**  
+   Incorporate more nested category data to make the use case more generic and robust.
+
+2. **Loading States:**  
+   Enhance the loading states with custom skeletons instead of simple spinners for better user experience.
+
+3. **State Management:**  
+   Expand state management by creating more Redux slices and accessing data using the Redux store directly, rather than solely relying on RTK Query.
+
+4. **Design Enhancements:**  
+   Improve the overall design with better imagery, typography, and UI refinements.
 
 ## Getting Started
 
