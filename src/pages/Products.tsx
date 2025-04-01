@@ -1,15 +1,15 @@
 import { useState } from "react";
 import useVh from "../hooks/useVh";
-import { Table, Pagination, Select } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { Table, Pagination } from "antd";
+import type { ColumnsType, TableProps } from "antd/es/table";
 import styled from "styled-components";
+import type { SorterResult } from "antd/es/table/interface";
 
 import { Product } from "../types/Product";
 import { ProductOutlined } from "@ant-design/icons";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import { useNavigate } from "react-router-dom";
-
-const { Option } = Select;
+import PageSizeSelector from "../components/PageSizeSelector";
 
 const products: Product[] = [
   {
@@ -85,7 +85,7 @@ const products: Product[] = [
     attributes: [
       { code: "color", value: "transparent" },
       { code: "dimensions", value: "120x60x45 cm" },
-      { code: "price", value: 299.99 },
+      { code: "price", value: 1999.99 },
       { code: "in_stock", value: false },
     ],
   },
@@ -111,11 +111,7 @@ const TableContainer = styled.div`
   position: relative;
 `;
 
-interface StyledTableProps {
-  columns: ColumnsType<Product>;
-}
-
-const StyledTable = styled(Table)<StyledTableProps>`
+const StyledTable = styled(Table as React.ComponentType<TableProps<Product>>)`
   width: 100%;
 `;
 
@@ -128,9 +124,13 @@ const PaginationContainer = styled.div`
 
 const Products = () => {
   useVh();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+
+  const [sortedInfo, setSortedInfo] = useState<SorterResult<Product>>(
+    {} as SorterResult<Product>
+  );
 
   const onPageChange = (page: number) => {
     setCurrentPage(page);
@@ -141,9 +141,39 @@ const Products = () => {
     setCurrentPage(1);
   };
 
+  const handleTableChange: TableProps<Product>["onChange"] = (
+    _pagination,
+    _filters,
+    sorter
+  ) => {
+    if (Array.isArray(sorter)) {
+      setSortedInfo(sorter[0]);
+    } else {
+      setSortedInfo(sorter);
+    }
+  };
+
+  const sortedProducts = [...products];
+  if (sortedInfo && sortedInfo.order && sortedInfo.columnKey) {
+    sortedProducts.sort((a, b) => {
+      const key = sortedInfo.columnKey;
+      let result = 0;
+      if (key === "id") {
+        result = a.id - b.id;
+      } else if (key === "name") {
+        result = a.name.localeCompare(b.name);
+      } else if (key === "price") {
+        result = getPrice(a) - getPrice(b);
+      } else if (key === "in_stock") {
+        result = (getInStock(a) ? 1 : 0) - (getInStock(b) ? 1 : 0);
+      }
+      return sortedInfo.order === "ascend" ? result : -result;
+    });
+  }
+
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const currentProducts = products.slice(startIndex, endIndex);
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
   const columns: ColumnsType<Product> = [
     {
@@ -152,7 +182,7 @@ const Products = () => {
       dataIndex: "id",
       key: "id",
       sorter: (a, b) => a.id - b.id,
-      sortDirections: ["ascend", "descend"],
+      sortOrder: sortedInfo.columnKey === "id" ? sortedInfo.order : undefined,
     },
     {
       title: "Image",
@@ -177,25 +207,27 @@ const Products = () => {
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
-      sortDirections: ["ascend", "descend"],
+      sortOrder: sortedInfo.columnKey === "name" ? sortedInfo.order : undefined,
     },
     {
       title: "Price",
       key: "price",
       render: (_, record) => `$${getPrice(record).toFixed(2)}`,
       sorter: (a, b) => getPrice(a) - getPrice(b),
-      sortDirections: ["ascend", "descend"],
+      sortOrder:
+        sortedInfo.columnKey === "price" ? sortedInfo.order : undefined,
     },
     {
       title: "In Stock",
       key: "in_stock",
       render: (_, record) => (getInStock(record) ? "Yes" : "No"),
       sorter: (a, b) => {
-        const aInStock = getInStock(a) ? 1 : 0;
-        const bInStock = getInStock(b) ? 1 : 0;
-        return aInStock - bInStock;
+        const aStock = getInStock(a) ? 1 : 0;
+        const bStock = getInStock(b) ? 1 : 0;
+        return aStock - bStock;
       },
-      sortDirections: ["ascend", "descend"],
+      sortOrder:
+        sortedInfo.columnKey === "in_stock" ? sortedInfo.order : undefined,
     },
     {
       title: "Attributes",
@@ -216,7 +248,7 @@ const Products = () => {
       title: "Actions",
       key: "actions",
       width: 100,
-      align:"right",
+      align: "right",
       fixed: "right",
       render: (_, record) => (
         <div style={{ textAlign: "right" }}>
@@ -241,6 +273,7 @@ const Products = () => {
           columns={columns}
           rowKey="id"
           pagination={false}
+          onChange={handleTableChange}
           scroll={{
             x: 800,
             scrollToFirstRowOnChange: true,
@@ -249,18 +282,10 @@ const Products = () => {
         />
       </TableContainer>
       <PaginationContainer>
-        <div>
-          <Select
-            defaultValue={pageSize}
-            onChange={onPageSizeChange}
-            style={{ width: 80 }}
-          >
-            <Option value={5}>5 / page</Option>
-            <Option value={10}>10 / page</Option>
-            <Option value={25}>25 / page</Option>
-            <Option value={50}>50 / page</Option>
-          </Select>
-        </div>
+        <PageSizeSelector
+          pageSize={pageSize}
+          onPageSizeChange={onPageSizeChange}
+        />
         <Pagination
           current={currentPage}
           pageSize={pageSize}

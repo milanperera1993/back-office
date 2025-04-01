@@ -22,6 +22,7 @@ const ProductContainer = styled.div`
   @media (max-width: 768px) {
     align-items: flex-start;
     padding-top: 16px;
+    padding-bottom: 48px;
   }
 `;
 
