@@ -24,13 +24,14 @@ const StyledMenu = styled(Menu)`
 interface SideMenuProps {
   menuItems: MenuProps["items"];
   defaultSelectedKey: string;
+  onSelectItem: () => void
 }
 
-const SideMenu = ({ menuItems = [], defaultSelectedKey }: SideMenuProps) => {
+const SideMenu = ({ menuItems = [], defaultSelectedKey, onSelectItem }: SideMenuProps) => {
   const navigate = useNavigate()
   const handleSelect: MenuProps["onSelect"] = (e) => {
     navigate(`/products/${e.key}`);
-
+    onSelectItem()
   };
 
   return (

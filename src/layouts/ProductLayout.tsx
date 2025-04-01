@@ -70,7 +70,15 @@ const ProductLayout: React.FC = () => {
         drawerWidth={DRAWER_WIDTH}
         closeDrawer={closeDrawer}
       >
-        <SideMenu defaultSelectedKey={defaultKey} menuItems={menuItems} />
+        <SideMenu
+          onSelectItem={() => {
+            setTimeout(() => {
+              closeDrawer();
+            }, 300);
+          }}
+          defaultSelectedKey={defaultKey}
+          menuItems={menuItems}
+        />
       </SideDrawer>
       <StyledContent>
         <Outlet />
