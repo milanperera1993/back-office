@@ -1,11 +1,14 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
-import DashboardLayout from "../layouts/DashboardLayout";
+import DashboardLayout from "../layouts/ProductLayout";
 import LoginLayout from "../layouts/LoginLayout";
+import Products from "../pages/Products";
+import ProductDetailed from "../pages/ProductDetailed";
 
 const isAuthenticated = () => {
   return false;
 }
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -14,7 +17,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: isAuthenticated() ? (
-          <Navigate to="/dashboard" replace />
+          <Navigate to="/product" replace />
         ) : (
           <Navigate to="/login" replace />
         ),
@@ -24,13 +27,25 @@ const router = createBrowserRouter([
         element: <LoginLayout />,
       },
       {
-        path: "dashboard",
+        path: "/",
         element: <DashboardLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/product" replace />
+          },
+          {
+            path: "product",
+            element: <Products />,
+          },
+          {
+            path: "product/:id",
+            element: <ProductDetailed />,
+          }
+        ],
       },
     ],
   },
 ]);
 
 export default router;
-
-

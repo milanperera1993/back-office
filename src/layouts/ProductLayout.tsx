@@ -4,7 +4,7 @@ import type { MenuProps } from "antd";
 import styled from "styled-components";
 import { CloseOutlined } from "@ant-design/icons";
 import Navbar from "../components/Navbar";
-import Products from "../pages/Products";
+import { Outlet } from "react-router-dom";
 
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -77,7 +77,7 @@ const menuItems: MenuProps["items"] = [
 
 const drawerWidth = 300;
 
-const DashboardLayout: React.FC = () => {
+const ProductLayout: React.FC = () => {
   const screens = useBreakpoint();
   const isMobile = !screens.lg;
 
@@ -121,10 +121,10 @@ const DashboardLayout: React.FC = () => {
         />
       </Drawer>
       <StyledContent>
-        <Products />
+        <Outlet/>
       </StyledContent>
     </>
   );
 };
 
-export default DashboardLayout;
+export default ProductLayout;

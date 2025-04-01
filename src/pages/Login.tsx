@@ -73,7 +73,7 @@ const LoginScreen: React.FC = () => {
    * @param values
    */
   const onFinish = (values: LoginFormValues) => {
-    naviagte("/dashboard");
+    naviagte("/product");
     console.log("Form values:", values);
   };
 

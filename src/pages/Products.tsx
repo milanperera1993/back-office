@@ -5,8 +5,9 @@ import type { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
 
 import { Product } from "../types/Product";
-import { EditOutlined } from "@ant-design/icons";
+import { ProductOutlined } from "@ant-design/icons";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -127,6 +128,7 @@ const PaginationContainer = styled.div`
 
 const Products = () => {
   useVh();
+  const navigate = useNavigate()
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -218,10 +220,12 @@ const Products = () => {
       fixed: "right",
       render: (_, record) => (
         <div style={{ textAlign: "right" }}>
-          <EditOutlined
-            style={{ fontSize: "16px", cursor: "pointer" }}
+          <ProductOutlined
+            style={{ fontSize: "24px", cursor: "pointer" }}
             onClick={() =>
-              console.log("Navigate to details for product", record.id)
+              navigate(`/product/${record.id}`, {
+                state: { product: record },
+              })
             }
           />
         </div>
