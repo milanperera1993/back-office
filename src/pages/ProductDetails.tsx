@@ -10,13 +10,18 @@ import {
   Form,
   Input,
   Switch,
+  notification,
 } from "antd";
 import styled from "styled-components";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import useVh from "../hooks/useVh";
-import { useLocation } from "react-router-dom";
-import { AttributeValue, Category, Product } from "../types/common";
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Category, Product } from "../types/common";
+import { useEffect, useState } from "react";
+import {
+  useFetchProductByIdQuery,
+  useUpdateProductMutation,
+} from "../redux/products/productsApi";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -102,15 +107,38 @@ const EmptyContainer = styled.div`
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
 `;
 
+interface ProductFormValues {
+  color: string;
+  material: string;
+  in_stock: boolean;
+}
+
 const ProductDetails = () => {
   useVh();
-  const screens = useBreakpoint();
-  const isMobile = !screens.md;
   const location = useLocation();
-  const product = location.state?.product as Product;
+  const navigate = useNavigate();
+
+  const initialProduct = location.state?.product as Product;
   const category = location.state?.category as Category;
 
-  // Manage edit mode
+  const [product, setProduct] = useState<Product>(initialProduct);
+
+  const [updateProduct, { isLoading }] = useUpdateProductMutation();
+  const { data: fetchedProduct, refetch } = useFetchProductByIdQuery(
+    product.id
+  );
+
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
+
+  const [notificationApi, contextHolder] = notification.useNotification();
+
+  useEffect(() => {
+    if (fetchedProduct) {
+      setProduct(fetchedProduct);
+    }
+  }, [fetchedProduct]);
+
   const [editing, setEditing] = useState(false);
   const [form] = Form.useForm();
 
@@ -133,9 +161,46 @@ const ProductDetails = () => {
   };
 
   // Save updated values
-  const handleSave = (values: AttributeValue) => {
-    console.log("Updated values:", values);
-    setEditing(false);
+  const handleSave = async (values: ProductFormValues) => {
+    const updatedProduct: Product = {
+      ...product,
+      attributes: product.attributes.map((attr) => {
+        if (attr.code === "color") {
+          return { ...attr, value: values.color };
+        }
+        if (attr.code === "material") {
+          return { ...attr, value: values.material };
+        }
+        if (attr.code === "in_stock") {
+          return { ...attr, value: values.in_stock };
+        }
+        return attr;
+      }),
+    };
+
+    try {
+      const updated = await updateProduct(updatedProduct).unwrap();
+      setProduct(updated);
+      notificationApi.success({
+        message: "Success",
+        description: "Product successfully updated",
+        placement: "topRight",
+      });
+      refetch();
+      navigate(location.pathname, {
+        replace: true,
+        state: { ...location.state, product: updated },
+      });
+    } catch (error) {
+      console.error("Failed to update product:", error);
+      notificationApi.success({
+        message: "Error",
+        description: "Failed to update product",
+        placement: "topRight",
+      });
+    } finally {
+      setEditing(false);
+    }
   };
 
   if (!product) {
@@ -150,6 +215,7 @@ const ProductDetails = () => {
 
   return (
     <>
+      {contextHolder}
       <ProductContainer>
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
@@ -204,6 +270,7 @@ const ProductDetails = () => {
                         htmlType="submit"
                         style={{ flex: 1 }}
                         size="large"
+                        disabled={isLoading}
                       >
                         Save
                       </StyledButton>
@@ -211,6 +278,7 @@ const ProductDetails = () => {
                         size="large"
                         onClick={() => setEditing(false)}
                         style={{ flex: 1 }}
+                        disabled={isLoading}
                       >
                         Cancel
                       </StyledButton>
@@ -243,6 +311,7 @@ const ProductDetails = () => {
                     type="primary"
                     size="large"
                     onClick={handleEditClick}
+                    disabled={isLoading}
                   >
                     Edit Product
                   </StyledButton>
@@ -259,16 +328,27 @@ const ProductDetails = () => {
             size="large"
             onClick={() => form.submit()}
             block
+            disabled={isLoading}
           >
             Save
           </Button>
-          <Button size="large" onClick={() => setEditing(false)} block>
+          <Button
+            size="large"
+            onClick={() => setEditing(false)}
+            block
+            disabled={isLoading}
+          >
             Cancel
           </Button>
         </FixedActionContainer>
       )}
       {isMobile && !editing && (
-        <FixedEditButton type="primary" size="large" onClick={handleEditClick}>
+        <FixedEditButton
+          type="primary"
+          size="large"
+          onClick={handleEditClick}
+          disabled={isLoading}
+        >
           Edit Product
         </FixedEditButton>
       )}

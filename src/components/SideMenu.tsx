@@ -50,7 +50,7 @@ const SideMenu = ({
     <StyledMenu
       mode="inline"
       items={menuItems}
-      defaultSelectedKeys={[defaultSelectedKey]}
+      selectedKeys={[defaultSelectedKey]}
       style={{ borderRight: 0 }}
       onSelect={handleSelect}
     />

@@ -19,8 +19,24 @@ const productsApi = createApi({
       query: () => "/",
       providesTags: ["Products"],
     }),
+    updateProduct: builder.mutation<Product, Product>({
+      query: ({id, ...rest}) => ({
+        url: `/${id}`,
+        method: "PUT",
+        body: rest,
+        headers: {
+          "Content-type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Products"],
+    }),
+    fetchProductById: builder.query<Product, number>({
+      query: (id) => `/${id}`,
+      providesTags: ["Products"],
+    })
   }),
+  
 })
 
-export const { useFetchProductsQuery } = productsApi;
+export const { useFetchProductsQuery, useUpdateProductMutation, useFetchProductByIdQuery } = productsApi;
 export default productsApi;

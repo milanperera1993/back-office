@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useVh from "../hooks/useVh";
 
-import { Table, Pagination, Skeleton, Breadcrumb } from "antd";
+import { Table, Pagination, Breadcrumb, Spin } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import { Category, Product } from "../types/common";
 import type { SorterResult } from "antd/es/table/interface";
@@ -15,7 +15,6 @@ import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import PageSizeSelector from "../components/PageSizeSelector";
 
 import { useFetchProductsQuery } from "../redux/products/productsApi";
-
 
 // Helper functions to get price
 const getPrice = (record: Product): number => {
@@ -61,16 +60,24 @@ const Products = () => {
   );
 
   const location = useLocation();
-  const category = location.state?.category as Category
+  const category = location.state?.category as Category;
 
   const { data: productsResponse, isLoading } = useFetchProductsQuery();
 
   if (isLoading || !productsResponse || !categoryId) {
     return (
       <div style={{ position: "relative", height: "400px" }}>
-        <TableContainer>
-          <Skeleton active paragraph={{ rows: 6 }} />
-        </TableContainer>
+        <div
+          style={{
+            position: "relative",
+            height: "400px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Spin size="large" />
+        </div>
       </div>
     );
   }
@@ -229,15 +236,17 @@ const Products = () => {
 
   return (
     <div style={{ position: "relative", height: "400px" }}>
-      <Breadcrumb style={{ marginBottom: "16px", padding: "0 16px" }}
-      items={[
-        {
-          title: "Products",
-        },
-        {
-          title: category?.name,
-        },
-      ]} />
+      <Breadcrumb
+        style={{ marginBottom: "16px", padding: "0 16px" }}
+        items={[
+          {
+            title: "Products",
+          },
+          {
+            title: category?.name,
+          },
+        ]}
+      />
       <TableContainer>
         <StyledTable
           dataSource={currentProducts}
