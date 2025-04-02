@@ -1,4 +1,10 @@
-import { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  Suspense,
+} from "react";
 import {
   Row,
   Col,
@@ -24,8 +30,15 @@ import { setUpdatedProduct } from "../redux/products/productSlice";
 import ProductImageDisplay from "../components/product/ProductImageDisplay";
 import ProductHeader from "../components/product/ProductHeader";
 import ProductDetailsInfo from "../components/product/ProductDetailsInfo";
-import ProductEditForm from "../components/product/ProductEditForm";
-import MobileFixedActions from "../components/product/MobileFixedActions";
+import LoadingSpinner from "../components/LoadingSpinner";
+
+// Lazy load components used conditionally
+const ProductEditForm = React.lazy(
+  () => import("../components/product/ProductEditForm")
+);
+const MobileFixedActions = React.lazy(
+  () => import("../components/product/MobileFixedActions")
+);
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -87,6 +100,7 @@ const EmptyContainer = styled.div`
   justify-content: center;
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
 `;
+
 export interface ProductFormValues {
   color: string;
   material: string;
@@ -106,29 +120,35 @@ const ProductDetails = () => {
   const [form] = Form.useForm<ProductFormValues>();
 
   const [updateProduct, { isLoading }] = useUpdateProductMutation();
-  const { data: fetchedProduct, refetch } = useFetchProductByIdQuery(
-    product.id
-  );
+  const { data: fetchedProduct, refetch } = useFetchProductByIdQuery(product.id);
 
   const [notificationApi, contextHolder] = notification.useNotification();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
-  // Update product state when new data is fetched
+  const attributesMap = useMemo(() => {
+    return product.attributes.reduce<Record<string, string | number | boolean>>((acc, attr) => {
+      acc[attr.code] = attr.value;
+      return acc;
+    }, {});
+  }, [product.attributes]);
+
+
+  const getAttribute = useCallback(
+    (code: string): string | number | boolean => {
+      return attributesMap[code] ?? "";
+    },
+    [attributesMap]
+  );
+
   useEffect(() => {
     if (fetchedProduct) {
       setProduct(fetchedProduct);
     }
   }, [fetchedProduct]);
 
-  // Helper to safely retrieve an attribute value from the product
-  const getAttribute = (code: string): string | number | boolean => {
-    const attr = product.attributes.find((a) => a.code === code);
-    return attr ? attr.value : "";
-  };
-
-  // Toggle edit mode and set form fields with current attribute values
-  const handleEditClick = (): void => {
+  // Handler to toggle edit mode and set form values
+  const handleEditClick = useCallback((): void => {
     form.setFieldsValue({
       color: String(getAttribute("color")),
       material: String(getAttribute("material")),
@@ -137,59 +157,62 @@ const ProductDetails = () => {
         getAttribute("in_stock") === true,
     });
     setEditing(true);
-  };
+  }, [form, getAttribute]);
 
   // Save updated product data
-  const handleSave = async (values: ProductFormValues): Promise<void> => {
-    const updatedProduct: Product = {
-      ...product,
-      attributes: product.attributes.map((attr) => {
-        if (attr.code === "color") {
-          return { ...attr, value: values.color };
-        }
-        if (attr.code === "material") {
-          return { ...attr, value: values.material };
-        }
-        if (attr.code === "in_stock") {
-          return { ...attr, value: values.in_stock };
-        }
-        return attr;
-      }),
-    };
+  const handleSave = useCallback(
+    async (values: ProductFormValues): Promise<void> => {
+      const updatedProduct: Product = {
+        ...product,
+        attributes: product.attributes.map((attr) => {
+          if (attr.code === "color") {
+            return { ...attr, value: values.color };
+          }
+          if (attr.code === "material") {
+            return { ...attr, value: values.material };
+          }
+          if (attr.code === "in_stock") {
+            return { ...attr, value: values.in_stock };
+          }
+          return attr;
+        }),
+      };
 
-    try {
-      const updated = await updateProduct(updatedProduct).unwrap();
-      setProduct(updated);
-      dispatch(setUpdatedProduct(updated));
-      notificationApi.success({
-        message: "Success",
-        description: "Product successfully updated",
-        placement: "topRight",
-      });
-      refetch();
-      navigate(location.pathname, {
-        replace: true,
-        state: { ...location.state, product: updated },
-      });
-    } catch (error) {
-      console.error("Failed to update product:", error);
-      notificationApi.error({
-        message: "Error",
-        description: "Failed to update product",
-        placement: "topRight",
-      });
-    } finally {
-      setEditing(false);
-    }
-  };
+      try {
+        const updated = await updateProduct(updatedProduct).unwrap();
+        setProduct(updated);
+        dispatch(setUpdatedProduct(updated));
+        notificationApi.success({
+          message: "Success",
+          description: "Product successfully updated",
+          placement: "topRight",
+        });
+        refetch();
+        navigate(location.pathname, {
+          replace: true,
+          state: { ...location.state, product: updated },
+        });
+      } catch (error) {
+        console.error("Failed to update product:", error);
+        notificationApi.error({
+          message: "Error",
+          description: "Failed to update product",
+          placement: "topRight",
+        });
+      } finally {
+        setEditing(false);
+      }
+    },
+    [product, updateProduct, dispatch, notificationApi, refetch, navigate, location]
+  );
 
-  const handleCancelEdit = (): void => {
+  const handleCancelEdit = useCallback((): void => {
     setEditing(false);
-  };
+  }, []);
 
-  const handleMobileSave = (): void => {
+  const handleMobileSave = useCallback((): void => {
     form.submit();
-  };
+  }, [form]);
 
   if (!product) {
     return (
@@ -219,13 +242,15 @@ const ProductDetails = () => {
                 <>
                   <Price>€{getAttribute("price")}</Price>
                   <Divider />
-                  <ProductEditForm
-                    form={form}
-                    isLoading={isLoading}
-                    onFinish={handleSave}
-                    showInlineButtons={!isMobile}
-                    onCancel={handleCancelEdit}
-                  />
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ProductEditForm
+                      form={form}
+                      isLoading={isLoading}
+                      onFinish={handleSave}
+                      showInlineButtons={!isMobile}
+                      onCancel={handleCancelEdit}
+                    />
+                  </Suspense>
                 </>
               ) : (
                 <>
@@ -245,11 +270,13 @@ const ProductDetails = () => {
         </Row>
       </ProductContainer>
       {isMobile && editing && (
-        <MobileFixedActions
-          isLoading={isLoading}
-          onSave={handleMobileSave}
-          onCancel={handleCancelEdit}
-        />
+        <Suspense fallback={<LoadingSpinner />}>
+          <MobileFixedActions
+            isLoading={isLoading}
+            onSave={handleMobileSave}
+            onCancel={handleCancelEdit}
+          />
+        </Suspense>
       )}
       {isMobile && !editing && (
         <FixedEditButton
@@ -264,4 +291,5 @@ const ProductDetails = () => {
     </>
   );
 };
+
 export default ProductDetails;
