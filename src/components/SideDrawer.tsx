@@ -53,7 +53,7 @@ const SideDrawer = ({drawerVisible, isMobile, drawerWidth, closeDrawer, children
             alt="Home24 Logo"
           />
         </DrawerTitleLogo>
-        <DrawerCloseButton onClick={closeDrawer}>
+        <DrawerCloseButton data-testid="drawer-close-button" onClick={closeDrawer}>
           <CloseOutlined />
         </DrawerCloseButton>
       </DrawerHeader>

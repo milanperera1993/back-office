@@ -98,7 +98,7 @@ const ProductTable = ({products, sortedInfo, onTableChange, onProductClick}: Pro
       title: "Attributes",
       key: "attributes",
       render: (_, record: Product) => (
-        <div>
+        <div data-testid="attributes-cell">
           {record.attributes
             .filter(
               (attr) => attr.code !== "price" && attr.code !== "in_stock"

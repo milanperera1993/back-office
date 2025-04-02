@@ -36,6 +36,7 @@ const SideMenu = ({
   categoryResponse,
 }: SideMenuProps) => {
   const navigate = useNavigate();
+  
   const handleSelect: MenuProps["onSelect"] = (e) => {
     const selectedCategory = categoryResponse.categories.find(
       (cat) => cat.id.toString() === e.key
