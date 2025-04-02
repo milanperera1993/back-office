@@ -15,7 +15,7 @@ const PaginationControls = React.lazy(
   () => import("../components/table/PaginationControls")
 );
 
-const Products: React.FC = () => {
+const Products = () => {
   useVh();
   const navigate = useNavigate();
   const { categoryId } = useParams<{ categoryId: string }>();

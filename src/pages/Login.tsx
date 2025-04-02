@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo, useCallback } from "react";
 import styled from "styled-components";
 import { Button, Form, Input, Typography } from "antd";
 import useVh from "../hooks/useVh";
@@ -48,7 +48,7 @@ const StyledPasswordInput = styled(Input.Password)`
   border: 1px solid #ccc;
   height: 40px;
   box-shadow: none;
-    font-size: 16px;
+  font-size: 16px;
 `;
 
 const StyledButton = styled(Button)<{ $valid: boolean }>`
@@ -62,47 +62,41 @@ const StyledButton = styled(Button)<{ $valid: boolean }>`
 `;
 
 const LoginScreen: React.FC = () => {
-  // Custom hook to set the viewport height and removing resizing issues in mobile view.
   useVh();
-  const { loginUser, currentUser } =useContext(AuthContext)
-  const navigate = useNavigate()
+  const { loginUser, currentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
   const location = useLocation();
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<LoginFormValues>();
   const [isFormValid, setIsFormValid] = useState(false);
 
-  /**
-   * handle form submission. onFinishedFailed is not used cause it's being handled using the button disable logic.
-   * @param values
-   */
-  const onFinish = (values: LoginFormValues) => {
-    loginUser({email: values.email});
-  };
 
-  /**
-   * validate the form fields on values change
-   */
-  const onValuesChange = () => {
-    const requiredFields = ["email", "password"];
-    const fields = form.getFieldsValue(requiredFields);
+  const from = useMemo(() => {
+    return ((location.state as { from?: string })?.from) || "/products";
+  }, [location.state]);
+
+
+  const onFinish = useCallback((values: LoginFormValues) => {
+    loginUser({ email: values.email });
+  }, [loginUser]);
+
+
+  const onValuesChange = useCallback(() => {
+    const requiredFields: Array<"email" | "password"> = ["email", "password"];
+    const fields = form.getFieldsValue(requiredFields as ("email" | "password")[]);
     const allFieldsFilled = requiredFields.every((field) => !!fields[field]);
-
     const hasErrors = form
       .getFieldsError(requiredFields)
       .some(({ errors }) => errors.length > 0);
-
     setIsFormValid(allFieldsFilled && !hasErrors);
-  };
+  }, [form]);
 
-  const from: string = (location.state as { from?: string })?.from || "/products";
-
-  // Redirect to the previous page if the user is already logged in
+  // Redirect if user is already logged in
   useEffect(() => {
     if (currentUser && location.pathname !== from) {
       navigate(from, { replace: true });
     }
   }, [currentUser, from, location.pathname, navigate]);
-
 
   return (
     <Container>

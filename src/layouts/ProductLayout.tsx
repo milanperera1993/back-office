@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState, useMemo, useCallback } from "react";
 import { Layout, Grid } from "antd";
 import type { MenuProps } from "antd";
 import styled from "styled-components";
@@ -18,15 +18,22 @@ const StyledContent = styled(Content)`
   transition: margin-left 0.3s;
 `;
 
-const ProductLayout: React.FC = () => {
+const ProductLayout = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams<{ categoryId: string }>();
   const screens = useBreakpoint();
   const isMobile = !screens.lg;
 
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const openDrawer = () => setDrawerVisible(true);
-  const closeDrawer = () => setDrawerVisible(false);
+
+  
+  const openDrawer = useCallback(() => {
+    setDrawerVisible(true);
+  }, []);
+
+  const closeDrawer = useCallback(() => {
+    setDrawerVisible(false);
+  }, []);
 
   const defaultCategoryResponse: CategoryResponse = {
     id: 0,
@@ -40,23 +47,29 @@ const ProductLayout: React.FC = () => {
     isError,
   } = useFetchCategoriesQuery();
 
-  const menuItems: MenuProps["items"] =
-    categoriesResponse?.categories?.map((category) => ({
-      key: category.id.toString(),
-      label: category.name,
-    })) ?? [];
+  const menuItems = useMemo<NonNullable<MenuProps["items"]>>(() => {
+    return (
+      categoriesResponse?.categories?.map((category) => ({
+        key: category.id.toString(),
+        label: category.name,
+      })) ?? []
+    );
+  }, [categoriesResponse]);
 
-  const defaultKey =
-    categoryId ||
-    (menuItems && menuItems.length > 0
-      ? (menuItems[0] as { key: string }).key
-      : "");
 
-  const defaultCategory =
-    categoriesResponse.categories.find(
-      (cat) => cat.id.toString() === defaultKey
-    ) || null;
+  const defaultKey = useMemo(() => {
+    return categoryId || (menuItems.length > 0 ? (menuItems[0] as { key: string }).key : "");
+  }, [categoryId, menuItems]);
 
+
+  const defaultCategory = useMemo(() => {
+    return (
+      categoriesResponse.categories.find((cat) => cat.id.toString() === defaultKey) ||
+      null
+    );
+  }, [categoriesResponse.categories, defaultKey]);
+
+  // Redirect to the default category if no categoryId is provided
   useEffect(() => {
     if (!categoryId && defaultKey) {
       navigate(`/products/${defaultKey}`, {
