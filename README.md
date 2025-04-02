@@ -101,6 +101,24 @@ npm run dev
 
 This command uses Vite to serve the application. Open your browser at the provided URL to view the back office.
 
+## Running Tests
+
+This project uses Jest along with React Testing Library for unit tests. Tests are organized alongside their respective components inside __test__ directories (e.g., `src/components/product/__test__/` and `src/components/table/__test__/`).
+
+To run all tests, use:
+
+```sh
+npm run test
+```
+
+You can also run tests in watch mode during development:
+
+```sh
+npm run test:watch
+```
+
+For more details on the test configuration, check the [jest.config.js](jest.config.js) file.
+
 ## Project Structure
 
 ```
