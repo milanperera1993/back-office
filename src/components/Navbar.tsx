@@ -25,12 +25,12 @@ const BurgerIconContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  margin-right: 12px;
+  margin-right: 20px;
   svg {
     font-size: 24px;
   }
@@ -47,8 +47,7 @@ const Logo = styled.div`
 const NavRight = styled.div`
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding-right: 16px;
+  gap: 16px;
 `;
 
 const NavIcon = styled.div`

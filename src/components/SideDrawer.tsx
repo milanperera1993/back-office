@@ -58,7 +58,7 @@ const SideDrawer = ({drawerVisible, isMobile, drawerWidth, closeDrawer, children
         </DrawerCloseButton>
       </DrawerHeader>
     }
-    mask={isMobile}
+    mask={true}
     style={!isMobile ? { position: "absolute" } : {}}
     styles={{ body: { padding: 0 }, header: { padding: 0 } }}
   >

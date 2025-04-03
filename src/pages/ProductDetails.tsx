@@ -101,10 +101,9 @@ const EmptyContainer = styled.div`
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
 `;
 
+// Updated form interface
 export interface ProductFormValues {
-  color: string;
-  material: string;
-  in_stock: boolean;
+  attributes?: { code: string; value: string | number | boolean }[];
 }
 
 const ProductDetails = () => {
@@ -126,13 +125,13 @@ const ProductDetails = () => {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
+  // Create a mapping of attribute codes to values for easy lookup
   const attributesMap = useMemo(() => {
     return product.attributes.reduce<Record<string, string | number | boolean>>((acc, attr) => {
       acc[attr.code] = attr.value;
       return acc;
     }, {});
   }, [product.attributes]);
-
 
   const getAttribute = useCallback(
     (code: string): string | number | boolean => {
@@ -147,35 +146,20 @@ const ProductDetails = () => {
     }
   }, [fetchedProduct]);
 
-  // Handler to toggle edit mode and set form values
+  // Handler to toggle edit mode and set form values with attributes array
   const handleEditClick = useCallback((): void => {
     form.setFieldsValue({
-      color: String(getAttribute("color")),
-      material: String(getAttribute("material")),
-      in_stock:
-        getAttribute("in_stock") === "true" ||
-        getAttribute("in_stock") === true,
+      attributes: product.attributes,
     });
     setEditing(true);
-  }, [form, getAttribute]);
+  }, [form, product.attributes]);
 
-  // Save updated product data
+  // Save updated product data using the dynamic attributes
   const handleSave = useCallback(
     async (values: ProductFormValues): Promise<void> => {
       const updatedProduct: Product = {
         ...product,
-        attributes: product.attributes.map((attr) => {
-          if (attr.code === "color") {
-            return { ...attr, value: values.color };
-          }
-          if (attr.code === "material") {
-            return { ...attr, value: values.material };
-          }
-          if (attr.code === "in_stock") {
-            return { ...attr, value: values.in_stock };
-          }
-          return attr;
-        }),
+        attributes: values.attributes ?? [],
       };
 
       try {
@@ -237,24 +221,10 @@ const ProductDetails = () => {
           </Col>
           <Col xs={24} md={12}>
             <ProductInfo>
-              <ProductHeader product={product} category={category} />
-              {editing ? (
+              {!editing && (
                 <>
-                  <Price>€{getAttribute("price")}</Price>
-                  <Divider />
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <ProductEditForm
-                      form={form}
-                      isLoading={isLoading}
-                      onFinish={handleSave}
-                      showInlineButtons={!isMobile}
-                      onCancel={handleCancelEdit}
-                    />
-                  </Suspense>
-                </>
-              ) : (
-                <>
-                  <ProductDetailsInfo getAttribute={getAttribute} />
+                  <ProductHeader product={product} category={category} />
+                  <ProductDetailsInfo attributes={product.attributes} />
                   <StyledButton
                     type="primary"
                     size="large"
@@ -265,6 +235,21 @@ const ProductDetails = () => {
                   </StyledButton>
                 </>
               )}
+
+              {/* Always mount the edit form but hide it when not editing */}
+              <div style={{ display: editing ? "block" : "none" }}>
+                <Price>€{getAttribute("price")}</Price>
+                <Divider />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ProductEditForm
+                    form={form}
+                    isLoading={isLoading}
+                    onFinish={handleSave}
+                    showInlineButtons={!isMobile}
+                    onCancel={handleCancelEdit}
+                  />
+                </Suspense>
+              </div>
             </ProductInfo>
           </Col>
         </Row>

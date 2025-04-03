@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Descriptions, Divider, Typography } from "antd";
+import { AttributeValue } from "../../types/common";
 
 const { Text } = Typography;
 
@@ -9,31 +10,33 @@ const Price = styled(Text)`
   color: #ff4d4f;
 `;
 
+
 interface ProductDetailsInfoProps {
-  getAttribute: (code: string) => string | number | boolean;
+  attributes: AttributeValue[];
 }
 
-const ProductDetailsInfo = ({getAttribute}: ProductDetailsInfoProps) => {
+const ProductDetailsInfo = ({ attributes }: ProductDetailsInfoProps) => {
+  const priceAttr = attributes.find(attr => attr.code === "price");
+  const otherAttributes = attributes.filter(attr => attr.code !== "price");
+
+  const formatValue = (value: string | number | boolean) => {
+    return typeof value === "boolean" ? (value ? "Yes" : "No") : value;
+  };
+
   return (
     <>
-    <Price>€{getAttribute("price")}</Price>
-    <Divider />
-    <Descriptions title="Product Details" bordered column={1} size="small">
-      <Descriptions.Item label="Color">
-        {getAttribute("color")}
-      </Descriptions.Item>
-      <Descriptions.Item label="Material">
-        {getAttribute("material")}
-      </Descriptions.Item>
-      <Descriptions.Item label="In Stock">
-        {getAttribute("in_stock") === "true" ||
-        getAttribute("in_stock") === true
-          ? "Yes"
-          : "No"}
-      </Descriptions.Item>
-    </Descriptions>
-    <Divider />
-  </>
-  )
-}
-export default ProductDetailsInfo
+      {priceAttr && <Price>€{priceAttr.value}</Price>}
+      <Divider />
+      <Descriptions title="Product Details" bordered column={1} size="small">
+        {otherAttributes.map(attr => (
+          <Descriptions.Item key={attr.code} label={attr.code}>
+            {formatValue(attr.value)}
+          </Descriptions.Item>
+        ))}
+      </Descriptions>
+      <Divider />
+    </>
+  );
+};
+
+export default ProductDetailsInfo;
