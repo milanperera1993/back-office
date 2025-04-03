@@ -72,6 +72,9 @@ A live demo is available: [Back Office Demo](https://back-office-ecru.vercel.app
 5. **Dynamic Form Enhancements:**  
    The current dynamic form for adding additional product attributes only supports string and number types. Ideally, users should be able to select the attribute type explicitly (e.g., text, number, boolean, URL, tags) and add validations accordingly.
 
+6. **Responsive Issues on  Low Resolution Laptops:**  
+   Some responsive issues have been noticed on low resolution laptops. These issues were not fully explored due to time constraints and should be revisited for enhanced compatibility.
+
 ## Getting Started
 
 ### Prerequisites
