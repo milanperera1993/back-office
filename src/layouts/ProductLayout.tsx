@@ -14,8 +14,16 @@ const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
 const StyledContent = styled(Content)`
-  padding: 24px;
   transition: margin-left 0.3s;
+  padding: 36px;
+
+  @media (max-width: 767px) {
+    padding: 24px;
+  }
+
+  @media (min-width: 992px) {
+    padding: 48px;
+  }
 `;
 
 const ProductLayout = () => {

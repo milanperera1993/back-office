@@ -6,6 +6,7 @@ import { AuthContext } from "../provider/util";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import LastUpdatedProduct from "./LastUpdatedProduct";
+import { useLocation } from "react-router-dom";
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -79,6 +80,9 @@ const Navbar: React.FC<NavBarProps> = ({
   disableBurgerHandler = false,
 }) => {
   const screens = useBreakpoint();
+  const location = useLocation();
+  // Hide the burger icon if the current route includes "/details/"
+  const showBurgerIcon = !location.pathname.includes("/details/");
   const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
   const { logoutUser } = useContext(AuthContext);
 
@@ -93,7 +97,7 @@ const Navbar: React.FC<NavBarProps> = ({
       <Row style={{ width: "100%" }} align="middle" justify="space-between" wrap={false}>
         <Col>
           <Row align="middle" wrap={false}>
-            {icons && (
+            {icons &&  showBurgerIcon &&(
               <BurgerIconContainer onClick={disableBurgerHandler ? undefined : onBurgerClick}>
                 <MenuOutlined />
               </BurgerIconContainer>

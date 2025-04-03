@@ -18,8 +18,12 @@ const TableContainer = styled.div`
   width: 100%;
   overflow-x: auto;
   box-sizing: border-box;
-  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 130px);
+  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 160px);
   position: relative;
+
+  @media (max-width: 768px) {
+    height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 140px);
+  }
 `;
 
 const StyledTable = styled(

@@ -16,6 +16,7 @@ import {
   Form,
   notification,
 } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import useVh from "../hooks/useVh";
@@ -43,12 +44,24 @@ const MobileFixedActions = React.lazy(
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
+
+const BackButton = styled(Button)`
+  position: absolute;
+  top: 16px;
+  left: 0px;
+  height: 40px;
+  width: 40px !important;
+  z-index: 1000;
+  font-size: 24px;
+  padding: 16px
+`;
+
 const ProductContainer = styled.div`
   margin: 0 auto;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
-  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
+  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 100px);
   position: relative;
   max-width: 1200px;
   padding: 0 16px;
@@ -60,6 +73,7 @@ const ProductContainer = styled.div`
     align-items: flex-start;
     padding-top: 16px;
     padding-bottom: 48px;
+    height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 60px);
   }
 `;
 
@@ -212,6 +226,12 @@ const ProductDetails = () => {
     <>
       {contextHolder}
       <ProductContainer>
+      <BackButton
+          type="default"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate(-1)}
+        >
+        </BackButton>
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
             <ProductImageDisplay
