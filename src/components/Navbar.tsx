@@ -81,9 +81,8 @@ const Navbar: React.FC<NavBarProps> = ({
 }) => {
   const screens = useBreakpoint();
   const location = useLocation();
-  // Hide the burger icon if the current route includes "/details/"
   const showBurgerIcon = !location.pathname.includes("/details/");
-  const headerPadding = screens.xl || screens.xxl ? "0 48px" : "0 16px";
+  const headerPadding = screens.md ? "0 48px" : "0 24px";
   const { logoutUser } = useContext(AuthContext);
 
   const logoutHandler = () => {

@@ -44,16 +44,17 @@ const MobileFixedActions = React.lazy(
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
+const BackButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  z-index: 1000;
+`;
 
 const BackButton = styled(Button)`
-  position: absolute;
-  top: 16px;
-  left: 0px;
   height: 40px;
   width: 40px !important;
-  z-index: 1000;
   font-size: 24px;
-  padding: 16px
+  padding: 16px;
 `;
 
 const ProductContainer = styled.div`
@@ -61,7 +62,7 @@ const ProductContainer = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
-  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 100px);
+  height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 140px);
   position: relative;
   max-width: 1200px;
   padding: 0 16px;
@@ -73,7 +74,7 @@ const ProductContainer = styled.div`
     align-items: flex-start;
     padding-top: 16px;
     padding-bottom: 48px;
-    height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 60px);
+    height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 100px);
   }
 `;
 
@@ -91,7 +92,7 @@ export const StyledButton = styled(Button)`
   width: 100%;
 
   @media (max-width: 768px) {
-    display: none; /* Hide inline button on smaller screens */
+    display: none;
   }
 `;
 
@@ -133,7 +134,9 @@ const ProductDetails = () => {
   const [form] = Form.useForm<ProductFormValues>();
 
   const [updateProduct, { isLoading }] = useUpdateProductMutation();
-  const { data: fetchedProduct, refetch } = useFetchProductByIdQuery(product.id);
+  const { data: fetchedProduct, refetch } = useFetchProductByIdQuery(
+    product.id
+  );
 
   const [notificationApi, contextHolder] = notification.useNotification();
   const screens = useBreakpoint();
@@ -141,10 +144,13 @@ const ProductDetails = () => {
 
   // Create a mapping of attribute codes to values for easy lookup
   const attributesMap = useMemo(() => {
-    return product.attributes.reduce<Record<string, string | number | boolean>>((acc, attr) => {
-      acc[attr.code] = attr.value;
-      return acc;
-    }, {});
+    return product.attributes.reduce<Record<string, string | number | boolean>>(
+      (acc, attr) => {
+        acc[attr.code] = attr.value;
+        return acc;
+      },
+      {}
+    );
   }, [product.attributes]);
 
   const getAttribute = useCallback(
@@ -201,7 +207,15 @@ const ProductDetails = () => {
         setEditing(false);
       }
     },
-    [product, updateProduct, dispatch, notificationApi, refetch, navigate, location]
+    [
+      product,
+      updateProduct,
+      dispatch,
+      notificationApi,
+      refetch,
+      navigate,
+      location,
+    ]
   );
 
   const handleCancelEdit = useCallback((): void => {
@@ -225,13 +239,14 @@ const ProductDetails = () => {
   return (
     <>
       {contextHolder}
-      <ProductContainer>
-      <BackButton
+      <BackButtonContainer>
+        <BackButton
           type="default"
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate(-1)}
-        >
-        </BackButton>
+        ></BackButton>
+      </BackButtonContainer>
+      <ProductContainer>
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
             <ProductImageDisplay
@@ -255,9 +270,8 @@ const ProductDetails = () => {
                   </StyledButton>
                 </>
               )}
-
-              {/* Always mount the edit form but hide it when not editing */}
               <div style={{ display: editing ? "block" : "none" }}>
+                <ProductHeader product={product} category={category} />
                 <Price>€{getAttribute("price")}</Price>
                 <Divider />
                 <Suspense fallback={<LoadingSpinner />}>
