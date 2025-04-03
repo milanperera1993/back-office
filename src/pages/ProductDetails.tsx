@@ -1,31 +1,12 @@
-import React, {
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-  Suspense,
-} from "react";
-import {
-  Row,
-  Col,
-  Typography,
-  Button,
-  Divider,
-  Grid,
-  Layout,
-  Form,
-  notification,
-} from "antd";
+import React, { useEffect, useState, useMemo, useCallback, Suspense} from "react";
+import { Row, Col, Typography, Button, Divider, Grid, Layout, Form, notification} from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import useVh from "../hooks/useVh";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Category, Product } from "../types/common";
-import {
-  useFetchProductByIdQuery,
-  useUpdateProductMutation,
-} from "../redux/products/productsApi";
+import { useFetchProductByIdQuery, useUpdateProductMutation } from "../redux/products/productsApi";
 import { useDispatch } from "react-redux";
 import { setUpdatedProduct } from "../redux/products/productSlice";
 import ProductImageDisplay from "../components/product/ProductImageDisplay";
@@ -33,7 +14,6 @@ import ProductHeader from "../components/product/ProductHeader";
 import ProductDetailsInfo from "../components/product/ProductDetailsInfo";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-// Lazy load components used conditionally
 const ProductEditForm = React.lazy(
   () => import("../components/product/ProductEditForm")
 );

@@ -9,7 +9,6 @@ import type { Product, Category } from "../types/common";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getInStock, getPrice } from "../utils/common";
 
-// Lazy loading for split
 const ProductTable = React.lazy(() => import("../components/table/ProductTable"));
 const PaginationControls = React.lazy(
   () => import("../components/table/PaginationControls")
