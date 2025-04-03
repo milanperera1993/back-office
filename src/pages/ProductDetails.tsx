@@ -1,12 +1,15 @@
-import React, { useEffect, useState, useMemo, useCallback, Suspense} from "react";
-import { Row, Col, Typography, Button, Divider, Grid, Layout, Form, notification} from "antd";
+import React, { useEffect, useState, useMemo, useCallback, Suspense,} from "react";
+import { Row, Col, Typography, Button, Divider, Grid, Layout, Form, notification } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { NAVBAR_HEIGHT } from "../constants/dimensions";
 import useVh from "../hooks/useVh";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Category, Product } from "../types/common";
-import { useFetchProductByIdQuery, useUpdateProductMutation } from "../redux/products/productsApi";
+import {
+  useFetchProductByIdQuery,
+  useUpdateProductMutation,
+} from "../redux/products/productsApi";
 import { useDispatch } from "react-redux";
 import { setUpdatedProduct } from "../redux/products/productSlice";
 import ProductImageDisplay from "../components/product/ProductImageDisplay";
@@ -45,15 +48,15 @@ const ProductContainer = styled.div`
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 140px);
   position: relative;
   max-width: 1200px;
-  padding: 0 16px;
+  padding: 40px 16px 16px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
 
   @media (max-width: 768px) {
     align-items: flex-start;
-    padding-top: 16px;
-    padding-bottom: 48px;
+    padding: 56px 16px 48px;
     height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 100px);
   }
 `;
@@ -95,8 +98,6 @@ const EmptyContainer = styled.div`
   justify-content: center;
   height: calc(var(--vh, 1vh) * 100 - ${NAVBAR_HEIGHT} - 48px);
 `;
-
-// Updated form interface
 export interface ProductFormValues {
   attributes?: { code: string; value: string | number | boolean }[];
 }
@@ -122,7 +123,6 @@ const ProductDetails = () => {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
-  // Create a mapping of attribute codes to values for easy lookup
   const attributesMap = useMemo(() => {
     return product.attributes.reduce<Record<string, string | number | boolean>>(
       (acc, attr) => {
@@ -146,7 +146,6 @@ const ProductDetails = () => {
     }
   }, [fetchedProduct]);
 
-  // Handler to toggle edit mode and set form values with attributes array
   const handleEditClick = useCallback((): void => {
     form.setFieldsValue({
       attributes: product.attributes,
@@ -154,7 +153,6 @@ const ProductDetails = () => {
     setEditing(true);
   }, [form, product.attributes]);
 
-  // Save updated product data using the dynamic attributes
   const handleSave = useCallback(
     async (values: ProductFormValues): Promise<void> => {
       const updatedProduct: Product = {
@@ -187,15 +185,7 @@ const ProductDetails = () => {
         setEditing(false);
       }
     },
-    [
-      product,
-      updateProduct,
-      dispatch,
-      notificationApi,
-      refetch,
-      navigate,
-      location,
-    ]
+    [ product, updateProduct, dispatch, notificationApi, refetch, navigate, location ]
   );
 
   const handleCancelEdit = useCallback((): void => {
